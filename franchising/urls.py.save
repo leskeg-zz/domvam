@@ -1,0 +1,76 @@
+from django.conf.urls.static import static
+from django.conf import settings
+
+from django.conf.urls import patterns, include, url
+
+# from django.contrib import admin
+# admin.autodiscover()
+
+# from mongoadmin import site
+
+urlpatterns = patterns('',
+    # Examples:
+    # url(r'^$', 'franchising.views.home', name='home'),
+    # url(r'^blog/', include('blog.urls')),
+
+    # SECURITY WARNING: not for production use!
+    
+    # url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT, 'show_indexes': True})
+    # url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
+
+    # url(r'^admin/', include(admin.site.urls)),
+    # url(r'^admin/', include(site.urls)),
+    url(r'^admin/?$', 'realty.views.admin_login', name='admin_login'),
+    url(r'^adminpage/', include('mongonaut.urls')),
+    url(r'^$', 'realty.views.home', name='home'),
+    url(r'^-+(?P<filter_words>[\w-]+)/?$', 'realty.views.home', name='home'),
+    url(r'^card+(?P<obj_id>[\w]+)/?$', 'realty.views.card', name='card'),
+    url(r'^add-card$', 'realty.views.add_card', name='add_card'),
+    url(r'^action-card$', 'realty.views.action_card', name='action_card'),
+    url(r'^register$', 'realty.views.register', name='register'),
+    url(r'^login$', 'realty.views.login_view', name='login'),
+    url(r'^logout$', 'realty.views.logout_view', name='logout'),
+    url(r'^user-profile$', 'realty.views.user_profile', name='user_profile'),
+    url(r'^add-review/(?P<obj_id>[\w]+)/?$', 'realty.views.add_review', name='add_review'),
+    url(r'^feedback/(?P<obj_id>[\w]+)/(?P<review_id>[0-9]+)/?$', 'realty.views.feedback', name='feedback'),
+    url(r'^favorite-cards$', 'realty.views.favorite_cards', name='favorite_cards'),
+    url(r'^my-cards$', 'realty.views.my_cards', name='my_cards'),
+    url(r'^mobile', 'realty.views.mobile_filter', name='mobile_filter'),
+    url(r'^authmobile', 'realty.views.mobile_auth', name='mobile_auth'),
+    url(r'^support', 'realty.views.ticket', name='ticket'),
+
+    # ajax requests:
+    url(r'^one_card', 'realty.views.one_card', name='one_card'),
+    url(r'^add-favorite-card', 'realty.views.add_favorite_card', name='add_favorite_card'),
+    url(r'^get_regions', 'realty.views.get_regions', name='get_regions'),
+    url(r'^ajax/add/get_cat_tabs', 'realty.views.ajax_get_cat_tabs', name='get_cat_tabs'),
+    url(r'^ajax/add/get_cat_types', 'realty.views.ajax_get_cat_types', name='get_cat_types'),
+    url(r'^ajax/get_filter', 'realty.views.ajax_get_filter', name='get_filter'),
+    url(r'^ajax/get_favorite_cards', 'realty.views.get_favorite_cards', name='get_favorite_cards'),
+    url(r'^ajax/ajax_add_card', 'realty.views.ajax_add_card', name='ajax_add_card'),
+    url(r'^ajax/ajax_login', 'realty.views.ajax_login', name='ajax_login'),
+    url(r'^ajax/ajax_register', 'realty.views.ajax_register', name='ajax_register'),
+    url(r'^ajax/get_region_in_english', 'realty.views.get_region_in_english', name='get_region_in_english'),
+    url(r'^ajax/get_region_autocomplete', 'realty.views.get_region_autocomplete', name='get_region_autocomplete'),
+    
+
+    url(r'^captcha/', include('captcha.urls')),
+
+
+    
+)
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+from django.conf import settings
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.STATIC_ROOT,
+        }),
+)
+)

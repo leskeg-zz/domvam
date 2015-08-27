@@ -1,0 +1,329 @@
+{% load staticfiles %}
+{% load common_tags %}
+
+<div id="side-filter" style="display: none; right: -290px;">   
+        <div id="side-bookmark"></div>
+        <div id="side-filter-menu">
+            {% for tab, tab_label in filter_obj.fields.cat_tab.choices %}
+                <div name="filter_living" {% filter_link get_params "cat_tab" tab css_class="calc-tab" %} >{{ tab_label }}</div>
+            {% endfor %}
+
+            {% for tab, tab_label in cat_tabs_commercial %}
+                <div style="display:none" name="filter_commercial" {% filter_link get_params "cat_tab" tab css_class="calc-tab" %} >{{ tab_label }}</div>
+            {% endfor %}
+        </div>
+        
+    <div id="side-filter-content">
+
+        <div id="side_region">
+            {{ filter_obj.region }}
+            <div class="remove_region" style="display: none;cursor:pointer;">x</div>
+        </div>
+
+        <div id="side_region">
+            {{ filter_obj.region2 }}
+            <div class="remove_region2" style="display: none;cursor:pointer;">x</div>
+        </div>
+        
+        <div id="side-sell-rent" name="sell_rent_side" class="switcher">
+                {{ filter_obj.action_type }}
+        </div>
+        
+        <div id="side2_1" name="search2_1" style="display:block;margin-left:13px" class="period_exchange">
+            <div name="search2_1_sale" style="display:block;" id="side2_1_sale">
+                <span class="exchange">{{ filter_obj.exchange }}</span>
+            </div>
+            <div name="search2_1_rent" style="display:none;" id="side2_1_rent"> 
+                <span class="month">{{ filter_obj.month }}</span>
+                <span class="day">{{ filter_obj.day }}</span>
+            </div>
+        </div><br>
+
+
+        
+        <input id="side-title" name="title" placeholder="Поиск по названию" type="text" style="width:100%">
+
+        <div name="cat_type_side" style="display:block">
+            {{ filter_obj.cat_type }}
+        </div>
+
+        <!--<div class="select-wrap" id="id_cat_type" name="type_of_building" style="display:none">
+            <div class="select" id="cat_type_0_id" name="type_of_building_side" data-type="cat_type">
+                <span>Тип строения</span>
+            </div>
+                <ul class="">
+                <li data-value="garage" class="option">Гараж</li>
+                <li data-value="parking_lot" class="option">Машино место</li>
+                <li data-value="other_liv_misc" class="option">Другое</li>
+            </ul>
+        </div>-->
+
+
+        <div id="side-rooms" name="number_of_rooms" style="display:block">
+            <span>Кол-во комнат:</span>
+            <div style="margin-top: 10px">
+            {{filter_obj.number_of_rooms}}
+            </div>
+        </div>
+
+
+        <div class="side-range" name="price" style="display:block">
+            <span>Цена:<br>от</span>
+            {{ filter_obj.price_min }}
+            <span> до </span>
+            {{ filter_obj.price_max }}
+            {{ filter_obj.currency }}
+        </div>
+
+        <div class="side-range" name="price2" style="display:none">
+            <span>Цена:<br>от</span>
+            {{ filter_obj.price_min }}
+            <span> до </span>
+            {{ filter_obj.price_max }}
+            {{ filter_obj.currency }}
+        </div>
+
+        <div class="side-range" name="price3" style="display:none">
+            <span>Цена:<br>от</span>
+            {{ filter_obj.price_min }}
+            <span> до </span>
+            {{ filter_obj.price_max }}
+            {{ filter_obj.currency }}
+        </div>
+
+        <div class="side-range" style="display:none" name="plot_size_in_acros">
+            <span>Участок:<br>от</span>
+            {{ filter_obj.plot_size_in_acros_min }}
+            <span> до </span>
+            {{ filter_obj.plot_size_in_acros_max }}
+            <span> сот.</span>
+        </div>
+
+        <div class="side-range" name="total_area" style="display:none">
+            <span>Участок:<br>от</span>
+            {{ filter_obj.total_area_min }}
+            <span> до </span>
+            {{ filter_obj.total_area_max }}
+            <span> сот.</span>
+        </div>
+
+        <div class="side-range" name="living_area" style="display:none">
+            <span>Площадь:<br>от</span>
+            {{ filter_obj.total_area_min }}
+            <span> до </span>
+            {{ filter_obj.total_area_max }}
+            <span> м<sup>2</sup></span>
+        </div>
+
+        <div class="with_photo" name="with_photo">{{ filter_obj.with_photo }}</div><br>
+
+        <div align="center">
+        <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/apartment_icon.png') 20px 7px no-repeat, #ff5442;display:block">Найти квартиру</button>
+        <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/house_icon.png') 20px 7px no-repeat, #ff5442;display:none">Найти дом</button>
+        <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/area_icon.png') 20px 7px no-repeat, #ff5442;display:none"><span style="padding-left:10px">Найти  участок</span></button>
+        <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/Other_icon.png') 20px 7px no-repeat, #ff5442;display:none"><span style="padding-left:10px">Найти помещение</span></button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// var remove_side = function(str){
+//     return str.replace("side-", "");
+// }
+
+
+$(function (){
+    $(document).on("scroll", function () {
+        if (($("#realty-calc").offset().top+$("#realty-calc").outerHeight()-$(document).scrollTop()) < 0) {
+            // Главный фильтр скрылся
+            if ($("#side-filter").css("display")=="block") return; // Боковой фильтр уже показан
+            $("#side-filter").css("display", "block");
+            if (false) {
+                $("#side-filter").css("right", "-290px");
+            }
+            else {
+                showSideFilter();
+                window.timer = setTimeout(function () {
+                    hideSideFilter();
+                }, 2000);
+            }
+        }
+        else {
+            // Фильтр показался
+            clearTimeout(window.timer);
+            $("#side-filter").stop(true)
+                .css("display", "none")
+                .css("right", "-290px");
+            $("#side-bookmark").stop(true).css("width", "")
+                .css("backgroundColor", "")
+                .css("left", "");
+        }
+        $('#side_region #id_region2_0').css('width','250px')
+    });
+
+    // $("div#side-filter #id_with_photo").on("click", function (){
+    //     if ( $("div#side-filter #id_with_photo").find(".checkbox").attr("checked") ) {
+    //         side_obj["with_photo"] = "yes";
+    //     }else {
+    //         delete side_obj["with_photo"];
+    //     } 
+    // });
+
+    // $("div#side-filter #cat_type_id").children().text("Квартира");
+    // $("div#side-filter #id_region_0 > ul > li")[0].remove();
+
+    // if ($("div#side-filter #region_0_id").children().text() == ""){
+    //     $("div#side-filter #region_0_id").children().text("Выбор региона, города"); 
+    // }
+
+    // $("div#side-filter #action_type_0_sale").trigger("click");
+
+    // $("div#side-filter .select").on("change", function (){
+    //     side_obj[clean_type($(this).data('type'))] = $(this).data('selected');
+    // });
+    // $("div#side-filter .switcher").on("change", function (){
+    //     side_obj[clean_type($(this).find("div.active").data('type'))] = $(this).find("div.active").data('value');
+    // });
+    // $("div#side-filter input").on("keyup", function (){
+    //     side_obj[ $(this).attr("name") ] = $(this).val();
+    // });        
+
+    // $("div#side-filter #action_type_0_rent").on("click", function (){
+    //     $("div#side-filter #id_month").parent().attr("checked","checked");
+    //     $("div#side-filter #id_day").parent().removeAttr("checked");
+    // });
+
+    // $("div#side-filter .checkbox").click(function (e) { // Работа с CHECKBOX'ом
+    //     if ( $(this).find("input").attr("id") == "id_day" ){
+    //         $("div#side-filter #id_month").parent().removeAttr("checked")
+    //     }else if ($(this).find("input").attr("id") == "id_month" ){
+    //         $("div#side-filter #id_day").parent().removeAttr("checked")
+    //     }
+
+    // });
+
+    // $("div#side-filter #action_type_0_sale").on("click", function (){
+    //     $($("[name='side2_1']")[0]).show();
+    //     $($("[name='side2_1']")[1]).hide();
+    //     $("div#side-filter #id_exchange").parent().removeAttr("checked")
+    // });
+
+    // $("div#side-filter .button-chooser").click(function () {
+    //     if ( $(this).children().hasClass("showR") ) {
+    //         side_obj[ clean_type($(this).children().filter( ".showR" ).data("type")) ] = $(this).children().filter( ".showR" ).data("value");
+    //     }
+    //     else {
+    //         delete side_obj[ "number_of_rooms" ];
+    //     }
+    // });
+
+    // $("div#side-filter .filter-link").on("click", function (){
+    //     new_obj = {};
+    //     new_obj["group"] = side_obj["group"];
+    //     new_obj["cat_tab"] = $(this).data("value");
+    //     new_obj["action_type"] = "sale";
+    //     delete side_obj;
+    //     side_obj = new_obj;
+    //     delete new_obj;
+
+    //     //  Clean filter fields
+    //     $("div#side-filter input").val("");
+    //     $("div#side-filter .checkbox").removeAttr("checked");
+    //     $("div#side-filter #region_0_id").children().text("Выбор региона, города");
+
+    //     var buttons = document.getElementsByName("side-buttons");
+    //     for (i = 0; i < 4; i++) { 
+    //         buttons[i].style.display="none";
+    //     }
+
+    //     if ( $(this).data("value") == "flat" ){
+    //         $("#cat_type_id").children().text("Квартира");
+    //         side_obj['cat_type'] = "flat";
+
+    //         show_hide_array([
+    //             "side-total_area",
+    //             "side-type_of_building",
+    //             "side-total_area",
+    //             "side-living_area"],
+    //         "hide");
+
+    //         show_hide_array([
+    //             "side-cat_type",
+    //             "side-number_of_rooms",
+    //             "side-price"], 
+    //         "show");
+    //         $("#side2_1").show();
+    //         $("#side2_1_rent").hide();
+    //         buttons[0].style.display="block";
+           
+
+    //     }else if ( $(this).data("value") == "house" ){
+    //         show_hide_array([
+    //             "side-cat_type",
+    //             "side-type_of_building",
+    //             "side-number_of_rooms",
+    //             "side-total_area",
+    //             ],"hide");
+
+    //         show_hide_array([
+    //             "side-total_area",
+    //             "side-price",
+    //             "side-living_area",
+    //             ], "show");
+    //         $("#side2_1").show();
+    //         $("#side2_1_rent").hide();
+    //         buttons[1].style.display="block";  
+
+    //     }else if ( $(this).data("value") == "area" ){
+    //         show_hide_array([
+    //             "side-total_area",
+    //             "side-cat_type",
+    //             "side-type_of_building",
+    //             "side-number_of_rooms",
+    //             "side-price",
+    //             "side-living_area",
+    //             ], "hide");
+    //         show_hide_array([
+    //             "side-price",
+    //             "side-total_area",
+    //             ], "show");
+    //         $("#side2_1").hide();
+    //         buttons[2].style.display="block";
+
+    //     }else if ( $(this).data("value") == "liv_misc" ){
+    //         show_hide_array([
+    //             "side-total_area",
+    //             "side-cat_type",
+    //             "side-price",
+    //             "side-number_of_rooms",
+    //             "side-price",
+    //             "side-living_area",
+    //             ], "hide");
+    //         show_hide_array([
+    //             "side-type_of_building",
+    //             "side-total_area",
+    //             ], "show");
+    //         $("#side2_1").hide();
+    //         buttons[3].style.display="block";
+    //     }
+    //     $("div#side-filter #action_type_0_sale").trigger("click");
+    // });
+
+    // $("div#side-filter #id_region_0 li.option").on("click", function(){
+    //     if ( $(this).parent().parent().next().next().attr("id") != "remove_region") {
+    //         $(this).parent().parent().css("width","230px");
+    //         $(this).parent().parent().parent().append( '<div id="remove_region" style="display: inline;cursor:pointer;">x</div>' );
+
+    //         $("div#side-filter #remove_region").on("click", function(){
+    //             delete side_obj["region"];
+    //             $("div#side-filter #region_0_id").parent().css("width","250px");
+    //             $(this).remove();
+    //             $("div#side-filter #region_0_id").children().text("Выбор региона, города"); 
+    //         });
+    //     }
+    // });
+
+
+}); 
+</script>

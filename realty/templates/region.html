@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body_content %}
+<div class="real_container">
+    {% for ad in ads %}
+     <div class="real_block">
+     <div>
+         {{ ad.doc_id}}
+     </div>
+        <div>
+            {{ ad.title }}
+        </div>
+        <div style="background-color: rgb(238, 238, 238);;">
+            {{ ad.address }}
+        </div>
+        <div>
+            {{ ad.adding_date | date:"j F o" }} 
+        </div>
+        <div>
+            {{ ad.price  }} 
+        </div>
+        <div>
+            {{ ad.number_of_rooms }} 
+        </div>
+        <div>
+            {{ ad.url }} 
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock body_content %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load filters %}
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}{% endblock map_header %}
+{% block body_content %}
+
+<div id="single-content">
+	<div class="header_wrap clearfix">
+	    <div class="header_block">
+	        <h2>Список компаний</h2>
+	        <span>с нами сотрудничают {{agency_count}} компаний по всей Беларуси</span>
+	    </div>
+	    <!--
+	    <div class="sort_form">
+	    <div>
+	        <div class="select-wrap" id="region_type">
+	            <div class="select" id="regino_type_id"></div>
+	            <ul class>
+	                <li data-value="p1" class="option">пункт 1</li>
+	                <li data-value="p3" class="option">пункт 2</li>
+	                <li data-value="p3" class="option">пункт 3</li>
+	            </ul>
+	        </div>
+	        <input id="" name="" type="hidden" value="p1">
+	    </div>
+	    <div>
+	        <div class="select-wrap" id="region_type">
+	            <div class="select" id="regino_type_id"></div>
+	            <ul class>
+	                <li data-value="p1" class="option">пункт 1</li>
+	                <li data-value="p3" class="option">пункт 2</li>
+	                <li data-value="p3" class="option">пункт 3</li>
+	            </ul>
+	        </div>
+	        <input id="" name="" type="hidden" value="p1">
+	    </div>
+	    </div>
+	    -->
+	</div>
+
+
+{% for agency in agencies %}
+	<a href="agency-page{{agency.id}}" style="color:black">
+    <div class="content_agensy_list clearfix">
+        <div class="agensy_list">
+            <div class="agensy_logo">
+                {%if agency.image %}
+                	<img id="agensy_image" style="cursor:pointer; width: 188px;  height: 160px;" src="{{agency.image}}"  />
+                {% else %}
+					<img id="agensy_image" style="cursor:pointer; width: 188px;  height: 160px;" src=""  />
+                {% endif %}
+            </div>
+            <div class="contacts-agensy">
+                <span class="agensy_title">{{agency.name_of_entity}}</span><br>
+
+                <span class="agensy_adres">
+					{% if agency.post_code %} {{agency.post_code}}, {% endif %}
+					{% if agency.region %} {{agency.region}}, {% endif %}
+					{% if agency.street %} {{agency.street}}, {% endif %}
+					{% if agency.house_number_body %} {{agency.house_number_body}}, {% endif %}
+					{% if agency.office_number_room_apartment %} {{agency.office_number_room_apartment}} {% endif %}
+				</span><br>
+
+                <span class="agensy_worktime">{{agency.worktime}}</span><br>
+                <div class="content_phone">
+
+				{% for phone in agency.phones %}
+	                <span class="agensy_phone">{{phone}}</span>
+				{% endfor %}
+	                <span class="agensy_phone">{{agency.contact_phone}}</span>
+                </div><br>
+            </div>
+            <div class="agensy_about">
+                <span>О компании</span><br>
+                <span>  
+                        {{agency.description}} <!--<a href="">Показать больше ></a>--><br>
+                </span>
+                <span>У компании {{agency.ads_number}} объявлений. Показать все</span>
+            </div>
+        </div>
+    </div>
+    </a>
+	<br>
+{% endfor %}
+
+</div>
+{% endblock body_content %}

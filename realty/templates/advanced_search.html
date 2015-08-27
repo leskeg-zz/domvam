@@ -1,0 +1,51 @@
+<div id="search3">
+    <div>
+        <h3>Жилая площадь, м2</h3>
+        <div id="fullSquare">
+            <span>от</span>
+            {{ filter_obj.fullSquare_min }}
+            <span>до</span>
+            {{ filter_obj.fullSquare_max }}
+        </div>
+        <h3>Водопровод</h3>
+        <div id="water" class="switcher" style="width: 100px;height: 40px;">
+            {{ filter_obj.water }}
+        </div>
+        <h3>Гараж</h3>
+        <div id="garage" class="switcher">
+            {{ filter_obj.garage }}
+        </div>
+        <h3>Отопление</h3>
+        <div id="heating" class="switcher">
+            {{ filter_obj.heating }}
+        </div>
+        <!-- <input id="keywords" placeholder="Ключевые слова"> -->
+    </div>
+    <div>
+        <h3>Площадь кухни, м2</h3>
+        <div id="kitchenSquare">
+            <span>от</span>
+            {{ filter_obj.kitchenSquare_min }}
+            <span>до</span>
+            {{ filter_obj.kitchenSquare_max }}
+        </div>
+        <h3>канализация</h3>
+        <div id="sewerage" class="switcher">
+            {{ filter_obj.sewerage }}
+        </div>
+        <div>{{ filter_obj.with_photo }}с фото</div><br>
+    </div>
+    <div>
+        <h3>Количество этажей</h3>
+        <div id="floors">
+            <span>от</span>
+            {{ filter_obj.floors_min }}
+            <span>до</span>
+            {{ filter_obj.floors_max }}
+        </div>
+        <h3>Электричество</h3>
+        <div id="electricity" class="switcher">
+            {{ filter_obj.electricity }}
+        </div>
+    </div>
+</div>   

@@ -1,0 +1,55 @@
+{% load staticfiles %}
+{% load filters %}
+{% for ad in ads %}
+    <div class="big-poster" style="position: relative;">
+        <div class="big-poster-price">
+            {% if user.is_authenticated %}
+            <span style="float:right" ><a class="favorite-card-main" href="/add-favorite-card/{{ ad.id }}" style="text-decoration:none">
+                <img src="/static/images/favorite_mark_select.png" {% if ad.id|slugify in myfav %}  class="" {% else %} class="grayscale" {% endif %}>
+            </a></span>
+            {% endif %}          
+            <div class="date">Добавленно: {{ ad.adding_date | date:"j F o" }}</div>
+            <div class="price">{{ ad.price|stringformat:".0f"|intspaces }} {{ ad.currency }}</div>
+                {% if ad.period == "short_term" %}
+                    <div>сутки {% if ad.auction %} (возможен торг) {% endif %}</div>
+                {% elif ad.period == "long_term" %}
+                    <div>NOсутки{% if ad.auction %} (возможен торг) {% endif %}</div>
+                {% endif %}      
+            <!--<div class="daily" style="line-height: 5px; margin-bottom: 25px">сутки</div>
+            <div class="course">По курсу: $20.99</div>
+            <div class="bargain" style="margin-bottom: 20px">возможен торг</div>
+            <a href="">__связаться с продавцом__</a> -->
+        </div>
+        <a href="{% url 'card' ad.id %}">
+        <div class="big-poster-photos">
+            {% for img_src in ad.images.original|slice:":4" %}
+                <img {% if forloop.counter0 == 0 %}class="main"{% endif %} {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}" {% else %} src="{{ img_src }}" {% endif %}>
+            {% endfor %}
+        </div>
+        </a>
+        <div class="big-poster-content" title="{{ ad.title }}">
+            <h1><a href="{% url 'card' ad.id %}">{{ ad.title|truncatechars:29 }}</a></h1>
+            <h2>{{ ad.region }} | {{ ad.address }}</h2>
+            {% if ad.number_of_reviews %} <span>Отзывы: {{ ad.number_of_reviews }}</span> {% endif %}
+            
+
+
+            <div class="square">
+                <span>Комнат</span>
+                <div>{{ ad.number_of_rooms }}</div>
+                <span>Площадь</span>
+                <div>{{ ad.total_area }}/{{ ad.living_area }}/{{ ad.kitchen_area }}</div>
+                <span>Этаж</span>
+                <div>{{ ad.floor }}/{{ ad.number_or_floors }}</div>
+            </div>
+            <p>{{ ad.description }}</p>
+        </div>
+    </div>
+{% endfor %}
+
+<!-- 
+    <div style="
+        position: absolute;
+        left: 140px;
+    ">{{ ad.images_len }}</div>
+-->

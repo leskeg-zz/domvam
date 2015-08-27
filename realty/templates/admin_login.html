@@ -1,0 +1,27 @@
+{% load assets %}
+{% load common_tags %}
+{% load filters %}
+<head>
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+</head>
+{% for i in 10|get_range %}
+<br>
+{% endfor %}
+{% block body_content %}
+<form method="POST" enctype="multipart/form-data" action="/admin">
+    {% csrf_token %} 
+    {% include "login_form.html"%}
+</form>
+{% for i in 20|get_range %}
+<br>
+{% endfor %}
+{% endblock body_content %}
+<script type="text/javascript">
+	$(document).ready(function() {
+        $('#id_username').attr('placeholder','');
+        $('#id_password').attr('placeholder','');
+        $('button').wrap('<p></p>');
+    });
+</script>

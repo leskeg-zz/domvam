@@ -1,0 +1,69 @@
+<div id="add-contact" style="text-align:center">
+    <div>Регистрация</div>
+    <br>Поля, отмеченные (*) обязательны для заполнения<br>
+    {% if messages %}    
+        {% for message in messages %}
+            {% if forloop.counter0 != 0 %}, {% endif %}
+            {{ message }}
+        {% endfor %}
+    {% else%}<br>
+    {% endif %}
+    <div class="contacts" style="margin-bottom: 20px">   
+        {% if RegisterForm.username.errors %}
+         <span>!</span>
+        {% endif %}            
+        <input id="id_username" maxlength="30" name="username" placeholder="Имя пользователя" type="text" required="required">*
+    </div>
+
+    <div class="contacts" style="margin-bottom: 20px">                    
+        {% if RegisterForm.email.errors %}
+         <span>!</span>
+        {% endif %}                    
+        <input id="id_email" maxlength="75" name="email" placeholder="E-mail" type="email" required="required">*
+    </div>
+
+    <div class="contacts">
+        {% if RegisterForm.password.errors %}
+         <span>!</span>
+        {% endif %}            
+        <input id="id_password" maxlength="128" name="password" placeholder="Пароль" type="password" required="required">*
+    </div>
+
+    <div style='margin-right:250px' id='agency_checkbox'>
+        <span class="agency">
+        <label><span style="cursor:pointer">
+        <div class="checkbox"><input id="id_agency" name="agency" type="checkbox" value=""></div>Агентство
+        </span></label>
+        </span>
+    </div>
+
+    <div id='agency_form' style='display:none'>
+        <br>Контактные данные<br>
+        <br><div>{{Agencyform.name_of_entity}}*</div>
+        <br><div>{{Agencyform.head_name}}*</div>
+        <br><div>{{Agencyform.head_position}}*</div>
+        <br><div>{{Agencyform.country}}*</div>
+        <br><div>{{Agencyform.locality}}*</div>
+        <br><div>{{Agencyform.region}}</div>
+        <br><div>{{Agencyform.post_code}}*</div>
+        <br><div>{{Agencyform.street}}*</div>
+        <br><div>{{Agencyform.house_number_body}}</div>
+        <br><div>{{Agencyform.office_number_room_apartment}}</div>
+        <br><div>{{Agencyform.mail_adress}}</div>
+        <br><div>{{Agencyform.contact_phone}}*</div>
+        <br><div>{{Agencyform.mobile_phone}}</div>
+        <br><div>{{Agencyform.fax}}</div>
+        <br><div>{{Agencyform.extra_email}}</div>
+        <br>Регистрационная форма в ЕГР (сведения из свидетельства о регистрации)<br>
+        <br><div>{{Agencyform.UNP_organization}}*</div>
+        <br><div>{{Agencyform.registering_autority}}*</div>
+        <br><div>{{Agencyform.number_state_registration}}</div>
+        <br><div>{{Agencyform.date_state_registration}}*</div>
+    </div>
+
+    <button class='submit' name="_register" style="display: inline-block;">Регистрация</button>
+    <button class='submit' name="_registerAgency" style="display:none">Регистрация</button>
+</div>
+<br>
+
+

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load filters %}
+{% load header_footer %}
+{% load assets %}
+{% load common_tags %}
+{% load staticfiles %}
+
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}
+    
+{% endblock map_header %}
+
+{% block body_content %} 
+{% include one_card.html %}
+{% endblock body_content %}

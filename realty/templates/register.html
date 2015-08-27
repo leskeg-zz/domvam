@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load filters %}
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}{% endblock map_header %}
+{% block body_content %}
+<form method="POST" enctype="multipart/form-data" action="/register">
+    {% csrf_token %} 
+    {% include "register_form.html"%}
+</form>
+
+<a href="{% url 'social:begin' 'facebook' %}">Facebook</a>
+
+{% for i in 20|get_range %}
+<br>
+{% endfor %}
+
+<!--
+<div id='screen'>
+</div>
+<div class='popup_message' style='display:none;'>
+<div style="cursor:pointer;margin-right:10px" align="right" class="close_popup">x</div>
+<br><br><br><br><div id='popup_message'></div>
+</div>
+-->
+
+<script type="text/javascript">
+$(function(){
+	$('#agency_checkbox').on('click',function(){
+		if ( $('#agency_checkbox').find('div').attr('checked') == 'checked' ){
+			$('#agency_form').show();
+			$('[name="_register"]').hide();
+			$('[name="_registerAgency"]').show();
+			required('agency_form',true);
+
+
+		}else{
+			$('#agency_form').hide();
+			$('[name="_register"]').show();
+			$('[name="_registerAgency"]').hide();
+			required('agency_form',false);
+		}
+	});
+	required('agency_form',false);
+});
+
+// $('.submit').on('click', function(){
+// 	$('#screen').css({  "display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+// 	$('.popup_message').show();
+//     $('#popup_message').html('Please check your email to activate your account');
+// 	$('.close_popup').click(function(){
+// 	    $('#screen').css("display", "none");
+// 	    $('.popup_message').css("display", "none");
+// 	});	
+// });
+
+function required(id,bool){
+	if (bool==false){
+		$.each($('#' + id).find('input'), function(i,el){
+			$(el).removeAttr('required');
+		});
+	}else{
+		$.each($('#' + id).find('input'), function(i,el){
+			$(el).attr('required','required');
+		});
+	}
+	$.each(['mobile_phone','fax','extra_email','number_state_registration'], function(i,el){
+		$('[name="'+ el + '"]').removeAttr('required');
+	});
+}
+</script>
+
+
+{% endblock body_content %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load filters %}
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}{% endblock map_header %}
+{% block body_content %}
+
+<ol>
+{% if ticket.errors %}
+    NO ERRORS: <br>
+    	{{ ticket.non_field_errors }}
+    ERRORS: <br>
+    {% for ticket in form %}
+        {% if ticket.errors %}
+                <li>{{ ticket.label }} - <strong>{{ ticket.errors }}</strong></li>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</ol>
+
+<br>
+<form method="POST" enctype="multipart/form-data" action="/support" validate>
+    {% csrf_token %} 
+	<div id="add-contact" style="text-align:center">
+	    <div>{{ticket.name}}</div><br>
+	    <div>{{ticket.email}}</div><br>
+	    <div>{{ticket.phone}}</div><br>
+	    <div>{{ticket.text}}</div><br>
+	    <button>Далее</button>
+	</div>
+<br>
+
+
+</form>
+{% for i in 20|get_range %}
+<br>
+{% endfor %}
+<script type="text/javascript">
+	$(window).ready(function(){
+		$('input').attr('required','true');
+		$('textarea').attr('required','true');
+		
+        
+        $('#realty-type > div[data-value="living"]').wrap( "<div><a href='/-living'></a></div>" );
+        $('#realty-type > div[data-value="commercial"]').wrap( "<div><a href='/-commercial'></a></div>" );  
+	});
+</script>
+{% endblock body_content %}

@@ -1,0 +1,28 @@
+{% load staticfiles %}
+{% load filters %}
+{% load header_footer %}
+{% load assets %}
+{% load common_tags %}
+{% load staticfiles %}
+
+{% if ad.number_of_rooms and ad.cat_type|is_flat_or_new %}
+    {{ad.number_of_rooms|tr_number_of_rooms}}{% if ad.exchange %}ой{% else %}ую{% endif %}
+{% endif %}
+
+
+{% if ad.cat_type and ad.group == "living" %}
+    {% if ad.cat_type == "flat" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}ы{% else %}у{% endif %}{% endif %}
+    {% if ad.cat_type == "new" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}ки{% else %}у{% endif %}{% endif %}
+    {% if ad.cat_type == "room" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}ы{% else %}у{% endif %}{% endif %}
+    {% if ad.cat_type == "house" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}а{% else %}{% endif %}{% endif %}
+    {% if ad.cat_type == "cottage" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}а{% else %}{% endif %}{% endif %}
+    {% if ad.cat_type == "dacha" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}и{% else %}у{% endif %}{% endif %}
+    {% if ad.cat_type == "half_house" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}{% else %}{% endif %}{% endif %}
+    {% if ad.cat_type == "area" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}а{% else %}ок{% endif %}{% endif %}
+    {% if ad.cat_type == "garage" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}а{% else %}{% endif %}{% endif %}
+    {% if ad.cat_type == "parking_lot" %}{{ad.cat_type|tr_cat_type2}}{% if ad.exchange or ad.action_type == "exchange" or ad.action_type_bck == "exchange" %}а{% else %}о{% endif %}{% endif %}
+{% endif %}
+
+{% if ad.cat_type and ad.group == "commercial" %}
+    {{ad.cat_type|translate_to_ru2}}
+{% endif %}

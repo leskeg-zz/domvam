@@ -1,0 +1,32 @@
+
+    {% load common_tags %}
+    {% load filters %}
+    <div class="pagination" align="center">
+        <span class="step-links">
+        <h4>
+            <a class="page_1" style="text-decoration: none;cursor:pointer;letter-spacing: -5px;"><<</a>
+            <a {% if ads.has_previous %} class="page_{{ ads.previous_page_number }}" style="text-decoration: none;cursor:pointer;margin-left:10px;"{% else %} style="margin-left:10px;" {% endif %}><</a>
+
+            {% if ads.has_previous %}
+                {% for page in ads.number|get_range|slice:":4" reversed %}
+                    {% if ads.number != page and page != 0 %}
+                        <a class="page_{{ ads.number|subtract:page }}" style="text-decoration: none;cursor:pointer">{{ ads.number|subtract:page }}</a>  
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <span class="current" style='color:red;'>
+                {{ ads.number }}
+            </span>
+
+            {% if ads.has_next and ads.number < 1133 %}
+                {% for page in ads.paginator.page_range|slice:":3" %}
+                    <a class="page_{{ ads.number|add:forloop.counter }}" style="text-decoration: none;cursor:pointer">{{ ads.number|add:forloop.counter }}</a> 
+                {% endfor %}
+            {% endif %}
+
+            <a {% if ads.has_next and ads.number < 1137 %} class="page_{{ ads.next_page_number }}" style="text-decoration: none;cursor:pointer" {% endif %}>></a>
+            <a {% if ads.paginator.num_pages <= 1137 %} class="page_{{ ads.paginator.num_pages }}" {% else %} class="page_1137" {% endif %} style="text-decoration: none;cursor:pointer;letter-spacing: -5px;margin-left:5px;">>></a>        
+        </h4>
+        </span>
+    </div>

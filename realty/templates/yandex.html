@@ -1,0 +1,72 @@
+<script type="text/javascript">
+function load_locations(){
+    ymaps.ready(init);
+    var myMap;
+    var myPlacemark = [];
+    var myGeoObj = [];
+    var myLinks = [];
+    var myTitles = [];
+    var myPrices = [];
+    var myMapImgs = [];
+
+    if ( $('#map').children().length > 1 ){
+        $('#map').children().first().remove();
+    }
+
+    function init(){
+
+        {% for ad in ads_list %}
+            ymaps.geocode('{{ ad.region }}, {{ ad.address }}', { results: 1 }).then(function (res) {
+                myGeoObj[ {{forloop.counter0}} ] = res.geoObjects.get(0);
+                myLinks[ {{forloop.counter0}} ] = "{{ad.id}}";
+                myTitles[ {{forloop.counter0}} ] = "{{ad.title}}";
+                myPrices[ {{forloop.counter0}} ] = "{{ad.price}}" + "{{ad.currency}}";
+                myMapImgs[ {{forloop.counter0}} ] = "{{ad.images.thumbs.0}}";
+            });
+        {% endfor %}
+
+        if ( typeof _obj["region"] == 'undefined' ){
+            var myGeocoder = ymaps.geocode("Belarus");
+            var myZoom = 6;
+        }else{
+            if ( String(_obj["region"]).indexOf(' область') > -1 ){ 
+                var myZoom = 7; 
+            }else{
+                var myZoom = 12;
+            }
+
+            if ( typeof _obj["region2"] == 'undefined' ){
+                var myGeocoder = ymaps.geocode(_obj["region"]);
+            }else{
+                var myGeocoder = ymaps.geocode(_obj["region"] + ', ' + _obj["region2"]);
+            }
+        }
+
+        // var myGeocoder = ymaps.geocode("Belarus");
+        var myCordinates = '';
+
+        myGeocoder.then(
+            function (res) {
+                myCordinates = res.geoObjects.get(0).geometry.getCoordinates();
+
+                myMap = new ymaps.Map ("map", {
+                    center: myCordinates,
+                    zoom: myZoom,
+                    behaviors: ['default', 'scrollZoom'],
+                    controls: ['fullscreenControl'],
+
+
+                }); 
+
+
+                $.each(myGeoObj,function(index,value){
+                    myPlacemark[ index ] = new ymaps.Placemark(myGeoObj[ index ].geometry.getCoordinates(), {
+                        // content: 'Moscow!',
+                        balloonContent: '<a href="/card' + myLinks[ index ]  + '">' + myTitles[ index ] + '</a><div>' +  myPrices[ index ] + '</div><img style="width: 63px;height: 50px;outline: 1px solid gray;" src="/static/' + myMapImgs[ index ] +'">'
+                    }); 
+                    myMap.geoObjects.add( myPlacemark[ index ] );
+                });
+            });
+        }
+}
+</script>

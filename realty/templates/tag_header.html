@@ -1,0 +1,8 @@
+{% for region in regions %}
+    {% if region == selected_region %}
+                <li>{{ region.name }}</li>
+    {% else %}
+        <li><a class="filter-link" href="{% url 'region' region_name=region.name %}" data-type="region" data-value="{{ region.slug }}">{{ region.name }}</a></li>
+    {% endif %}
+    
+{% endfor %}

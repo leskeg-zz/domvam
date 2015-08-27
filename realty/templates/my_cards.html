@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load filters %}
+{% load staticfiles %}
+
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}
+    
+{% endblock map_header %}
+
+{% block body_content %}
+
+<div id="single-content">
+
+    {% if ads %}
+        <div style="display: flex; flex-wrap: wrap;">
+            {% for ad in ads %}
+
+                {% if ad|ad_is_active %}
+                    <div>
+                        {% include "3_action_button.html" %}
+                        <br>
+
+                        <div class="small-poster" style="height: 365px;">
+                            <a href="{% url 'card' ad.id %}">
+                            {% if ad.images.thumbs %}
+                                {% for img_src in ad.images.thumbs|slice:":1" %}
+                                    <img {% if forloop.counter0 == 0 %}class="main"{% endif %} {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}" {% else %} src="{{ img_src }}" {% endif %}>
+                                {% endfor %}
+                            {% else %}
+                                <img class="main">
+                            {% endif %}
+                            </a>
+                            <h1 style="height:15px;"><a href="{% url 'card' ad.id %}">
+
+{% if ad.action_type|str_contains:"rent" %}
+
+    {% if ad.period and ad.period|str_contains:"day" %}
+        {{"day"|tr_type_of_action}}
+    {% else %}
+        {{"rent"|tr_type_of_action}}
+    {% endif %}
+
+{% else %}
+
+    {% if ad.exchange %}
+        {{"exchange"|tr_type_of_action}}
+    {% else %}
+        {{"sale"|tr_type_of_action}}
+    {% endif %}
+
+{% endif %}
+
+{% include "title.html" %}
+
+                            </a></h1>
+                            <h2 style="height: 55px;"><div class="date">Добавленно: {{ ad.adding_date | date:"j F o" }}</div>
+                            <div class="date">({{ ad.expiring_date | date:"b. j" }} дня)</div>
+                            {{ ad.region }} | {{ ad.address }}</h2>
+                            <div class="square">
+                            <!--    <span>Комнат</span>
+                                <div>{{ ad.number_of_rooms }}</div>
+                                <span>Площадь</span>
+                                <div>{{ ad.total_area }}/{{ ad.living_area }}/{{ ad.kitchen_area }}</div> -->
+                            </div>
+                            <div class="small-poster-price">
+                                <div style='font-size: 130%;float:right'class="price" style='float:right'>{{ ad.price|stringformat:".0f"|intspaces }} {{ ad.currency }}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endif %}
+                
+            {% endfor %}
+        </div>
+        <br><br><br><br><br><br><br>
+    {% else %}
+    {% for i in 30|get_range %}
+        <br>
+    {% endfor %}
+    {% endif %}
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.small-poster').css('margin-right','20px');
+        $('.small-poster').css('display','block');
+        
+        $('#realty-type > div[data-value="living"]').wrap( "<div><a href='/-living'></a></div>" );
+        $('#realty-type > div[data-value="commercial"]').wrap( "<div><a href='/-commercial'></a></div>" );  
+    });
+</script>
+{% endblock body_content %}

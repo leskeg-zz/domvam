@@ -1,0 +1,22 @@
+<div id="add-contact" style="text-align:center">
+<div>Авторизация</div>
+{% if messages %}    
+    {% for message in messages %}
+        {% if forloop.counter0 != 0 %}, {% endif %}
+        {{ message }}
+    {% endfor %}
+{% else%}<br>
+{% endif %}
+    <div class="contacts" style="margin-bottom: 20px">   
+        <input id="id_username" maxlength="30" name="username" placeholder="Имя пользователя или E-mail" required="required">
+    </div>
+    <div class="contacts">
+        <input id="id_password" maxlength="128" name="password" placeholder="Пароль" type="password" required="required">
+    </div>
+    <!--<div id="add-contact" align="center">
+        <span><div class="checkbox"><input type="checkbox"></div>Remember me</span>
+        <span><a href="">Forgot password?</a></span>
+    </div>-->  
+    <button name="_login">Авторизация</button>
+</div>   
+<br>

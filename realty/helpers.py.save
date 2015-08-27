@@ -1,0 +1,108 @@
+# -*- coding: utf-8 -*-
+import os, os.path
+from hashlib import md5
+
+from django.conf import settings
+
+from models import Currency
+from datetime import datetime, timedelta
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+import PIL
+
+def ad_is_active(ad):
+    if hasattr(ad,'expiring_date') and ad.expiring_date:
+        expiring_date = ad.expiring_date
+    elif hasattr(ad,'adding_date') and ad.adding_date:
+        expiring_date = ad.adding_date + timedelta(days=30)
+    
+    if  expiring_date > datetime.now():
+        return True
+    else:
+        return True
+
+def price_convert(value, from_, to):
+    objects = Currency.objects.all()
+    _rate = {}
+    for obj in objects:
+        _rate[obj['charcode'].lower()] = obj
+    _rate['byr'] = {'rate': 1, "scale": 1}
+
+    return value * (_rate[from_]['rate']/_rate[to]['rate'])
+
+def handle_add_images(f,folder):
+    filename = f.name
+    
+
+    md5_obj = md5()
+    for chunk in f.chunks():
+        md5_obj.update(chunk)
+
+    del chunk
+
+    filename = "%s%s" % (md5_obj.hexdigest(), os.path.splitext(filename)[-1])
+    print filename
+
+
+    path = os.path.join(settings.MEDIA_ROOT, str(folder), filename)
+    if not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
+
+    with open(path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+            
+        if f.size > 1000000:
+            #Image Compression
+               img = Image.open( path )
+               (imgWidthNew,imgHightNew) = img.size
+               newImg = Image.new("RGB",(imgWidthNew,imgHightNew),(0,0,0,0))
+               pixels = newImg.load()
+               newImg.paste (img)
+               os.remove(path)
+               newImg.save(path, optimize=True, quality=85)
+                
+            # if os.stat(path).st_size > 1000000:
+            #     os.remove(path)
+
+    path = os.path.join(settings.STATIC_URL, settings.MEDIA_URL, str(folder), filename)
+    return (path)
+
+def remove_images(f,folder):
+    path = os.path.join(settings.MEDIA_ROOT, str(folder))
+    filenames = f.encode().split(",")
+    savednames = os.listdir(path)
+    deletenames = list(set(savednames)-set(filenames))
+
+    for filename in deletenames:
+        os.remove(os.path.join(settings.MEDIA_ROOT, str(folder), str(filename)))
+
+    savednames = os.listdir(path)
+    return [os.path.join(settings.STATIC_URL, settings.MEDIA_URL, str(folder))+'/{0}'.format(i) for i in savednames]
+
+def query_lte_gte(filter_obj, mystring, query_params):
+    if not filter_obj.cleaned_data[ mystring + '_min' ] is None:
+        query_params[ mystring + '__gte' ] = int(filter_obj.cleaned_data[ mystring + '_min' ])
+    if not filter_obj.cleaned_data[ mystring + '_max' ] is None:
+        query_params[ mystring + '__lte' ] = int(filter_obj.cleaned_data[ mystring + '_max' ])
+
+def query_lte_gte_(get_params, mystring, query_params):
+    try:
+        query_params[ mystring + '__gte' ] = int(get_params[ mystring + '_min' ])
+    except:
+        pass
+
+    try:
+        query_params[ mystring + '__lte' ] = int(get_params[ mystring + '_max' ])
+    except:
+        pass
+
+def query_inside(filter_obj, mystring, query_params):
+    if filter_obj.cleaned_data[ mystring ] == 'yes':   
+        my_arr = [value for k, value in eval(mystring.upper() + '_CHOICES') ]
+        my_list = list(my_arr)
+        for element in [u"нет"]:
+            if element in my_list:
+                my_list.remove( element )
+
+        query_params[ mystring + '__in' ] = my_list

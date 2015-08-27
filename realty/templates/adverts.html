@@ -1,0 +1,58 @@
+{% load staticfiles %}
+{% load filters %}
+<div id="num_of_ads_new" hidden>{{ ads_count }}</div>
+
+<div id="adverts_list" style="display:block">
+	{% if ads_vip_super %}
+		{% with ad=ads_vip_super %}
+			<div class="big-poster" style="border-width:10px;border-color:red;border-style:dashed">
+				{% include "adverts_list.html" %}
+			</div>
+		{% endwith %}
+	{% endif %}
+
+	{% if ads_vip_normal and ads_vip_normal.id != ads_vip_super.id %}
+		{% with ad=ads_vip_normal %}
+			<div class="big-poster" style="border-width:10px;border-color:orange;border-style:dashed">
+				{% include "adverts_list.html" %}
+			</div>
+		{% endwith %}
+	{% endif %}
+
+    {% for ad in ads %}
+    	{% if ad.id != ads_vip_super.id and ad.id != ads_vip_normal.id %}
+		    <div class="big-poster">
+		    	{% include "adverts_list.html" %}
+		    </div>
+	    {% endif %}
+    {% endfor %}
+</div>
+
+<div id="adverts_grid" style="display:none" style="display: flex; flex-wrap: wrap; justify-content: space-between">
+	{% if ads_vip_super %}
+		{% with ad=ads_vip_super %}
+			<div class="small-poster" style="border-width:10px;border-color:red;border-style:dashed;margin-right:20px">
+				{% include "adverts_block.html" %}
+			</div>
+		{% endwith %}
+	{% endif %}
+
+	{% if ads_vip_normal and ads_vip_normal.id != ads_vip_super.id %}
+		{% with ad=ads_vip_normal %}
+			<div class="small-poster" style="border-width:10px;border-color:orange;border-style:dashed;margin-right:20px">
+				{% include "adverts_block.html" %}
+			</div>
+		{% endwith %}
+	{% endif %}
+	
+	<br>
+    {% for ad in ads %}
+    	{% if ad.id != ads_vip_super.id and ad.id != ads_vip_normal.id %}
+	    	<div class="small-poster" style="margin-right:20px">
+	    		{% include "adverts_block.html" %}
+	    	</div>
+    	{% endif %}
+    {% endfor %}
+</div>
+
+{% include "paginator.html" %}  

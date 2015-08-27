@@ -1,0 +1,69 @@
+{% load staticfiles %}
+{% load filters %}
+    
+   
+
+
+
+    <div class="type_adverst"><!-- Тип обьявления-->   
+           {% if ad.action_type %} {{ad.action_type|translate_to_ru2}}{%endif%}    
+                
+            {% if ad.cat_type %} | {{ad.cat_type|translate_to_ru2}}{%endif%}
+    </div>
+    
+      
+        
+   
+        <div class="list_date" style="text-decoration: none;">Добавленно: {{ ad.adding_date | date:"j F o" }}</div><!--Дата добавления елесмента-->
+    
+
+        <a  id="link_image" {% if mode == "favorites" %} href="{% url 'card' ad.id %}" {% else %} class="link_one_card" idcard="{{ ad.id }}" style="cursor:pointer" href="{% url 'card' ad.id %}"{% endif %}>
+            
+         
+
+            {% if ad.images_len > 0 %}              
+                    {% for img_src in ad.images.thumbs|slice:":1" %}
+                        <img class="link_img" {% if forloop.counter0 == 0 %}class="main"{% endif %} {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}"   {% else %} src="{{ img_src }}" {% endif %}>
+                    {% endfor %}
+            {% else %}
+                <img class="main">
+                <!--<div id="block-map-{{ad.id}}"></div>-->
+            {% endif %}
+        <div style='color: #fff; text-decoration: none' class="price price_in_img">{{ ad.price|stringformat:".0f"|intspaces }} {{ ad.currency }}</div>
+        </a><!--Блок с изображением-->
+    
+        {% if user.is_authenticated  and ad.username != user.username %}
+            <div class="star" > <!--Блок со звездами-->
+                <a class="favorite-card-main" name="{{ ad.id }}" style="text-decoration:none;cursor:pointer">
+                    <img src="/static/images/favorite_mark_select.png"{% if ad.id|slugify in myfav %}style="width:22px;height:22px;border:0px;margin-top:0px;display:block"{% else %}style="width:22px;height:22px;border:0px;margin-top:0px;display:none"{% endif %}>
+                    <img src="/static/images/favorite_mark_unselect.png"{% if ad.id|slugify in myfav %}style="width:22px;height:22px;border:0px;margin-top:0px;display:none"{% else %}style="width:22px;height:22px;border:0px;margin-top:0px;display:block"{% endif %}>
+                </a>
+            </div>
+        {% endif %}
+
+    
+
+    <h1 class="header_adver"><a {% if mode == "favorites" %} href="{% url 'card' ad.id %}" {% else %} class="link_one_card" idcard="{{ ad.id }}" style="cursor:pointer" href="{% url 'card' ad.id %}"{% endif %}>{{ ad.title|truncatechars:26 }}</a></h1><!--Заголовок обьявления-->
+    <div >
+    <h2><img style='width:8px;height: 13px; border:0px;margin-bottom:0px;' src='http://domvam.by/static/images/map_pin.png'><span style="margin-left:9px">{{ ad.region }} | {{ ad.address }}</span></h2><!--Адрес недвижимости-->
+    </div>
+
+    <div class="square" style="margin-bottom: 20px" >
+        {% if ad.number_of_rooms|isnumeric %}
+            <span>Комнат</span>
+            <div>{{ ad.number_of_rooms }}</div>
+        {% else %}
+            <span style="width:44px"></span>
+            <div style="background-color:white"></div>
+        {% endif %}
+        {% if ad.floor|isnumeric or ad.number_or_floors|isnumeric  %}
+                <span>Этаж</span>
+                <div>{% if ad.floor|isnumeric %}{{ ad.floor }}{% endif %}
+                {% if ad.floor|isnumeric and ad.number_or_floors|isnumeric  %}/{% endif %}
+                {% if ad.number_or_floors|isnumeric %}{{ ad.number_or_floors }}{% endif %}</div>
+                {% else %}
+                <span style="width:30px"></span>
+                <div style="background-color:white"></div>
+        {% endif %}
+    </div><!--Количество комнат и этажей-->
+

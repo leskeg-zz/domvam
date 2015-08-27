@@ -1,0 +1,26 @@
+{% load staticfiles %}
+{% load filters %}
+{% load header_footer %}
+{% load assets %}
+{% load common_tags %}
+{% load staticfiles %}
+
+{% if ad.action_type|str_contains:"rent" %}
+
+    {% if ad.period and ad.period|str_contains:"day" %}
+        {{"day"|tr_type_of_action}}
+    {% else %}
+        {{"rent"|tr_type_of_action}}
+    {% endif %}
+
+{% else %}
+
+    {% if ad.exchange or ad.action_type == "exchange" %}
+        {{"exchange"|tr_type_of_action}}
+    {% else %}
+        {{"sale"|tr_type_of_action}}
+    {% endif %}
+
+{% endif %}
+
+{% include "title.html" %}

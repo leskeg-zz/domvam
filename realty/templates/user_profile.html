@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+{% load filters %}
+{% load staticfiles %}
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}
+    
+{% endblock map_header %}
+
+{% block body_content %}
+
+<div id="single-content">
+<br>
+
+{% if user_profile %}
+    {% include "user_profile_header.html" %}
+{% elif agency_page %}
+    {% include "agency_page.html" %}
+{% endif %}
+
+<div id='content-adverts'>
+    {% include "sort.html" %}
+    <div id="icon_view">{% include "adverts.html" %}</div>
+    {% for i in 30|get_range %}
+    <br>
+    {% endfor %}
+</div>
+
+{% if is_agency %}
+<div id='content-contacts'>
+    <span style="cursor:pointer" id="add_new_contact">Добавить контакт+</span>
+    <br>
+    <br>
+            <form id='add_new_contact_form' validate style="display:none">
+                    <span id="new_contact_fullname" ><input id="new_contact_fullname_value" placeholder="fullname"  name="fullname"  style="width: 200px; height: 34px" type="text" required></span>
+                    <span id="new_contact_email"   style="margin-left:10px"><input id="new_contact_fullname_email" name="email" placeholder="email" style="width: 200px; height: 34px" type="email" required></span>
+                    <span id="new_contact_phone"   style="margin-left:10px"><input id="new_contact_fullname_phone" name="phone"  placeholder="phone" style="width: 200px; height: 34px" type="text" required></span>
+                    <span id="new_contact_service_area"   style="margin-left:10px"><input id="new_contact_fullname_service_area" name="service_area"  placeholder="service_area" style="width: 200px; height: 34px" type="text" required></span>
+                <!--<span><input style="width: 200px; height: 34px" name="submit" type="submit"></span>   -->
+                <span><button style="width: 200px; height: 34px" name="submit" type="submit">Добавить контакт</button></span>   
+            </form>
+    <br>
+    {% for contact in user.contacts %}
+        <div class='my_contact' id='my_contact_{{forloop.counter0}}'>
+
+
+    <div class="agents-list clearfix">
+        <div class="agents-photo">
+            <img style="cursor:pointer; width: 125px;  height: 112px;" src="">
+        </div>
+        <div class="agent-contact">
+            <span>{{ contact.fullname }}</span><br>
+            <div class="agent-phone">
+                <div>{{ contact.email }}</div>
+                <div>{{ contact.phone }}</div>
+            </div><br>
+            <!--<span class="list">У агента 12 обьявлений <a href="">Показать все ></a></span>-->
+        </div>
+        <div class="agent-info">
+            <table>
+                <th>Информация</th>
+                <tr>
+                    <td>Регион обслуживания:</td><td>{{contact.service_area}}</td>
+                </tr>
+                <tr>
+                    <td>Стаж продажи:</td><td>{{contact.longevity| date:"j F o"}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="statistic">
+        <table>
+                <th>Стастистика</th>
+                <tr>
+                    <td>Ведет обьявлений:</td><td>N/A{# {{contact.lead_ads}} #}</td>
+                </tr>
+                <tr>
+                    <td>Средняя цена сделки:</td><td>N/A{# ${{contact.avg_transition_price}} #}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="edit-agent"></div>
+        <!--<div class="close-agent"></div>-->
+        <div id="delete_contact_id_{{forloop.counter0}}" class='delete_contact close-agent' style="cursor:pointer;margin-left:10px"> x</div>
+    </div> 
+
+
+            <!--<span id="contact_id_{{forloop.counter0}}_fullname"  >{{ contact.fullname }}</span>
+            <span id="contact_id_{{forloop.counter0}}_email"  style="margin-left:10px">{{ contact.email }}</span>
+            <span id="contact_id_{{forloop.counter0}}_phone"  style="margin-left:10px">{{ contact.phone }}</span>-->
+            
+        </div>   
+    {% endfor %}
+
+</div> 
+<div id="add_info_agency_content" style="display:none">
+            <form id='add_info_agency_form' validate>
+                    <textarea name="description" placeholder="description" style="width: 200px; height: 34px" type="text" required></textarea>
+                    <input name="worktime" placeholder="description" style="width: 200px; height: 34px" type="text" required>
+                    <span><input style="width: 200px; height: 34px" name="submit" type="submit"></span>   
+            </form>
+</div>
+{% endif %}
+
+<div style="display:none">
+
+    <div>Пользователь: {{ user.username }}</div>
+
+    <div>E-mail: {{ user.email }}<span id='edit_email' style="cursor:pointer;">+</span>
+        <span id="edit_email_input" style="display:none"><input id="edit_email_value" placeholder="E-mail" type="email" style="width: 200px; height: 34px">
+        <span id="submit_edit_email" style="cursor:pointer;">-></span></span>
+    </div>
+
+    <div id='user_phones'>Телефоны: 
+        {% if user.phones %}
+            <ul style="margin-left:40px">
+                {% for phone in user.phones %}
+                    <li><span id="phone_id_{{forloop.counter0}}"  >{{ phone }}</span><span id="delete_phone_id_{{forloop.counter0}}" class='delete_phone' style="cursor:pointer;"> x</span></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <span style="cursor:pointer;margin-left:40px" id='add_new_phone1'>+</span>
+        <span id="new_phone_input" style="display:none"><input id="new_phone_value" mask="+999 99 999 99 99" placeholder="+375 00 000 00 00" style="width: 200px; height: 34px" type="text">
+        <span id="submit_new_phone" style="cursor:pointer;">-></span></span>
+    </div>
+
+</div>
+
+
+<div style="display: none;"> <!-- Reviews and feedback disabled -->
+
+    {% if my_reviews %}
+    <br>
+        <h3>Мои отзывы:</h3>
+        <div class="rewiev">
+            <div style="position: relative;">
+
+            {% for ad, reviews in my_reviews.items %}
+                <span><a href="/card/{{ ad.id }}">{{ ad.title }}</a></span><br>
+                
+                {% for review in reviews %}
+                    <span class="date">{{ review.date }}</span>
+                    <p>{{ review.text }}</p><br>
+
+                    {% if review.feedback %}
+                        <div style="margin: 0 0 5% 5%">
+
+                        {% for feedback in review.feedback %}
+                                <span class="nickname">{{feedback.username}}</span>
+                                <span class="date">{{feedback.date}}</span>
+                                <p>{{feedback.text}}</p>
+                        {% endfor %}
+
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+            {% endfor %}
+
+            </div>
+        </div>
+    {% endif %}
+</div>  <!-- Reviews and feedback disabled -->
+
+{% for i in 30|get_range %}
+        <br>
+    {% endfor %}
+
+
+</div>
+<script type="text/javascript">
+    $(function(){
+        $('#map_icon').hide();
+        // $('#add_info_agency').on('click',function(){
+        //     $('#add_info_agency_content').toggle();
+        //     // $('#add_info_agency_form').toggle();
+        // });
+
+        // $('#add_info_agency_form').submit(function(e){
+
+        //     e.preventDefault();
+        //     var formData = $(this).serialize();
+        //     ajaxGet('add_info_agency', formData, function (data){
+        //         console.log(data)
+        //         window.location.reload();
+        //     });
+
+        // });
+
+
+        $('#add_new_contact').on('click',function(e){
+            e.preventDefault();
+            $('#add_new_contact_form').toggle();
+        });
+
+        $('#add_new_contact_form').submit(function(e){
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            ajaxGet('add_new_contact', formData, function (data){
+                console.log(data)
+                window.location.reload();
+            });
+
+        });
+
+        $('.delete_contact').on('click',function(e){
+            e.preventDefault();
+            var formData = {'action':'delete', 'value': $(this).attr('id') }
+            ajaxGet('edit_contact_list', formData, function (data){
+                console.log(data)
+                window.location.reload();
+            });
+        });
+
+        $('#my-contacts').on('click', function(){
+            $('#content-adverts').hide();
+            $('#content-contacts').show();
+        });
+
+
+        path = ''
+        $("[type=file]").change(function(){
+            var photo_loaded = '';
+            var file = this.files[0],
+                reader = new FileReader(),
+                img = $(this).siblings('img')
+            reader.onload = function (e) {
+                photo_loaded = e.target.result;
+                // img.attr('src', e.target.result);
+            }
+            reader.readAsDataURL(file);
+            var new_profile_photo = [];
+            new_profile_photo.push(file);
+
+
+            var profile_photo = new FormData();
+            profile_photo.append('new_profile_photo', new_profile_photo[0]);
+            $('#profile-image').attr('src','/static/images/loading-animation-3.gif');
+            jQuery.ajax({
+                url :"add_profile_image",
+                type : "POST",
+                processData: false,
+                contentType: false,
+                data: profile_photo,
+                success: function(data){
+                    console.log(data);
+                    // $('#profile-image').attr('src',data.content);
+                    path = data.content;
+                },
+                complete: function(response){
+                    // img.attr('src', photo_loaded );
+                    window.location.reload();
+                    // $('#profile-image').attr('src',path);
+                }
+            });
+        })
+
+        $('#profile-image').on('click', function() {
+            $('#profile-image-upload').click();
+        });
+
+        current_status = 'my-cards';
+
+        $('#add_new_phone1').on("click",function(){
+                $('#new_phone_input').toggle();
+
+        });
+
+        $('#user_fullname').on("click",function(){
+            $('#edit_fullname_input').show();
+            if ( $('#user_fullname').text() != 'Добавить Полное имя+' ){
+                $('#edit_fullname_value').val($('#user_fullname').text());
+            }
+            $('#user_fullname').hide();
+        });
+
+        $('#edit_email').on("click",function(){
+            if ($(this).text() == "+"){
+                $(this).text('-');
+                $('#edit_email_input').show();
+            }else{
+                $(this).text('+');
+                $('#edit_email_input').hide();
+            }
+        });
+
+        $('#submit_new_phone').on("click",function(){
+            ajaxGet('edit_user_profile', {'element':'phones','action':'add','value': $('#new_phone_value').val()}, function (data){
+                window.location.replace('/user-profile');
+            }); 
+        });
+
+        $('.delete_phone').on("click",function(){
+            ajaxGet('edit_user_profile', {'element':'phones','action':'delete','value': $(this).attr('id')}, function (data){
+                window.location.replace('/user-profile');
+            }); 
+        });
+
+        $('#submit_edit_fullname').on("click",function(){
+            ajaxGet('edit_user_profile', {'element':'fullname','action':'edit','value': $('#edit_fullname_value').val()}, function (data){
+                window.location.replace('/user-profile');
+            }); 
+        });
+
+        $('#submit_edit_email').on("click",function(){
+            ajaxGet('edit_user_profile', {'element':'email','action':'edit','value': $('#edit_email_value').val()}, function (data){
+                window.location.replace('/user-profile');
+            }); 
+        });
+        
+        $('#realty-type > div[data-value="living"]').wrap( "<div><a href='/-living'></a></div>" );
+        $('#realty-type > div[data-value="commercial"]').wrap( "<div><a href='/-commercial'></a></div>" );
+
+        $('#my-cards').on('click',function(){
+            $('#content-adverts').show();
+            $('#content-contacts').hide();
+            current_status = 'my-cards';
+            var grid_view = false;
+            if ($("#sort-icon").find(".active").attr("id") == "small-icon"){
+                grid_view = true;
+            }
+            ajaxGet('ajax/ajax_get_my_cards',_obj, function(data){
+                $('#icon_view').html(data);
+                if ( grid_view == true ){
+                    $('#small-icon').trigger('click')
+                }
+
+                add_favorite();
+                $(".pagination").css("display","none");
+            });
+
+        });
+
+        $('#my-favorites').on('click',function(){
+            $('#content-adverts').show();
+            $('#content-contacts').hide();
+            current_status = 'my-favorites';
+            var grid_view = false;
+            if ($("#sort-icon").find(".active").attr("id") == "small-icon"){
+                grid_view = true;
+            }
+            ajaxGet('ajax/ajax_get_my_favorites',_obj, function(data){
+                $('#icon_view').html(data);
+                $('#icon_view').html(data);
+                if ( grid_view == true ){
+                    $('#small-icon').trigger('click')
+                }
+                add_favorite();
+                $(".pagination").css("display","none");
+            });
+
+        });
+
+        add_favorite();
+        $(".pagination").css("display","none"); 
+        $('#my-favorites').click();
+        $('#big-icon').click();
+        $('[data-value="byr"]').click();
+    });
+</script>
+{% endblock body_content %}

@@ -1,0 +1,18 @@
+<div id="sort">
+    <div id="sort-icon">
+       {{ filter_obj.icon_view }}
+       <!--<div style="display:none" id="map_icon"><div id="inner-map-icon"></div></div>-->
+    </div>
+    <span class="sort-text" style="margin-right: 14px; vertical-align: top;">Сортировка:</span>
+        <span class="sort-text" id="sort_order">{{ filter_obj.sort_order }}</span>
+        {{ filter_obj.convert_currency_to }}
+</div>
+<script type="text/javascript">
+// only_ONE = true;
+// function showMap(){
+//     $('#map').show();
+//     $('#close_map').show();
+//     if (only_ONE){load_locations();}
+//     only_ONE = false;
+// }
+</script>

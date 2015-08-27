@@ -1,0 +1,498 @@
+{% extends "main_page.html" %}
+<link rel="stylesheet" type="text/css" href="/static/css/slider-arrows/normalize.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/slider-arrows/demo.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/slider-arrows/component.css" />
+{% load staticfiles %}
+{% load filters %}
+{% load header_footer %}
+{% load assets %}
+{% load common_tags %}
+{% load staticfiles %}
+
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+
+{% block title %}{{ad.window_title}}{% endblock title %}
+
+{% block meta_keys %}{{ad.action_type}}, {{ad.cat_type|translate_to_ru2}}, {{ad.region}}, {{ad.title}}{% if ad.region2 %}, {{ad.region2}}{% endif %}{% endblock meta_keys %}
+{% block meta_desc %}{{ad.description}}{% endblock meta_desc %}
+
+
+
+{% block one_card %}
+    <div id="single-content">
+        <div id="adress">
+            {% if ad.group == "living" %}<span>Главная</span>{% endif %}
+            {% if ad.group == "commercial" %}<span>Комерческое</span>{% endif %}            
+            {% if ad.action_type %}<img src="/static/images/adress_arrow.png"><span class="after"> {{ ad.action_type }}</span>{% endif %}
+            {% if ad.cat_type %}<img src="/static/images/adress_arrow.png"><span class="after">{{ ad.cat_type|translate_to_ru2 }}</span>{% endif %}
+            {% if ad.number_of_rooms %}<img src="/static/images/adress_arrow.png"><span class="after">{{ ad.number_of_rooms }}</span>{% endif %}
+            <!--<img src="/static/images/adress_arrow.png">
+            <span class="after">{{ ad.garage }}</span>-->
+            {% if ad.city or ad.region %}<img src="/static/images/adress_arrow.png"><span class="after">{% if ad.city %} {{ ad.city }} {% else %} {{ad.region}} {% endif %}</span>{% endif %}
+            {% if ad.region2 %}<img src="/static/images/adress_arrow.png"><span class="after"> {{ad.region2}}</span>{% endif %}
+            {% if ad.region3 %}<img src="/static/images/adress_arrow.png"><span class="after"> {{ad.region3}}</span>{% endif %}
+            {# {% if ad.address %}<img src="/static/images/adress_arrow.png"><span class="after">{{ ad.address }}</span>{% endif %} #}
+        </div>
+
+
+
+    <div id="sidebar">
+        <a href="/"><button id="addBack" style="cursor:pointer">Вернуться назад в каталог</button></a>
+        {% if myadd or user.is_superuser %}
+            {% include "3_action_button.html" %}
+        {% endif %}
+            <div id="price">
+                <div>{{ad.other_prices.byr|stringformat:".0f"|intspaces }} BYR </div>
+                <div class="date">Добавленно: {{ ad.adding_date | date:"j F o" }}</div>
+                {% if ad.period == "short_term" %}
+                    <div>сутки {% if ad.auction %} (возможен торг) {% endif %}</div>
+                {% elif ad.period == "long_term" %}
+                    <div>NOсутки{% if ad.auction %} (возможен торг) {% endif %}</div>
+                {% endif %}  
+
+                {% if ad.number_of_views %}
+                    {% if ad.number_of_views == 1 %}
+                        Просмотрено 1 раз
+                    {% else %}
+                        Просмотрено {{ad.number_of_views}} раза
+                {% endif %}
+
+                {% else %}
+                    Просмотров нет
+                {% endif %}
+
+                <ul><li>по курсу: {# {{ ad.period }} #}</li>
+                <li>{{ad.other_prices.usd|stringformat:".0f"|intspaces }}$ </li>
+                <li>{{ad.other_prices.eur|stringformat:".0f"|intspaces }}€ </li>
+
+<!--            {% for cur, price in ad.other_prices.items %}
+                    <li>{{ price|stringformat:".0f"|intspaces }} {{ cur }}/мес</li>
+                {% endfor %}-->
+                </ul>
+
+                {% if user.is_authenticated  and ad.username != user.username %}
+                    <span style="float:right" >
+                        <a class="favorite-card-main" name="{{ ad.id }}" style="text-decoration:none;cursor:pointer">
+                            <img src="/static/images/favorite_mark_select.png"{% if myfav %}style="width:22px;height:22px;border:0px;margin-top:-30px;display:block"{% else %}style="width:22px;height:22px;border:0px;margin-top:-30px;display:none"{% endif %}>
+                            <img src="/static/images/favorite_mark_unselect.png"{% if myfav %}style="width:22px;height:22px;border:0px;margin-top:-30px;display:none"{% else %}style="width:22px;height:22px;border:0px;margin-top:-30px;display:block"{% endif %}>
+                        </a>
+                    </span>
+                {% endif %} 
+
+            <!--    <button id="connect">Связаться с автором</button> -->
+            </div>
+            <div>Контакты владельца:</div>
+            {%if ad.contact_name %}<div style="margin-bottom:5px">{{ ad.contact_name }}</div>{% endif %}
+            <div id="phones">
+                {% if ad.phones|is_not_unicode %}
+                    {% for phone in ad.phones %}
+                        {{ phone }}
+                    {% endfor %}&nbsp;{% if ad.phones2 %}{{ad.phones2}}&nbsp;{%endif%}{% if ad.phones3 %}{{ad.phones3}}{%endif%}
+                {% else %}
+                    {{ ad.phones }}&nbsp;{% if ad.phones2 %}{{ad.phones2}}&nbsp;{%endif%}{% if ad.phones3 %}{{ad.phones3}}{%endif%}
+                {% endif %}
+                <div class="name"> {{ ad.name }} </div>
+                <!--{{ ad.username }}-->
+            </div>
+            {% if skype %}    
+            <div id="skypes">
+                <div class="skype"><a href="mailto:"> {{ ad.skype }} </a></div>
+            </div>
+            {% endif %}
+
+            {% if ad.images_len > 0 %}
+            <span id="show-on-map">Показать на карте</span>
+                <div id="YMapsID" style="width: 250px; height: 250px;"></div>
+            {% endif %}
+
+
+
+
+
+
+
+            <div id="filling" style="display: none;">
+                <div>Заполненость страницы</div>
+                <div id="progress-bar">
+                    <div id="progress"></div>
+                    <div id="percent" style="font-weight: bold;">__75%__</div>
+                </div>
+                <span class="fill-field">Фото</span>
+                <span class="fill-field">Описание</span>
+
+
+
+                <div id="temp_progress">
+                    <button>-10%</button>
+                    <button>-1%</button>
+                    <button>+1%</button>
+                    <button>+10%</button>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+        <div id="single-main">
+<h1>{{ad.h1_title}}</h1>
+
+            <!--<div>
+            {% if ad.address %}{{ ad.address }}. {% endif %}
+            {% if ad.region %}{{ ad.region }}, {% endif %}
+            {% if ad.region2 %}{{ ad.region2 }}. {% endif %}
+            {% if ad.location %} {{ad.location}} {% endif %}</div>-->
+
+        {% if ad.images.medium %}
+
+        <!-- Jssor Slider Begin -->
+        <!-- You can move inline styles to css file or css block. -->
+        <div id="slider1_container" style="position: relative; top: 0px; left: 0px; width: 800px;
+            height: 550px; background: white; overflow: hidden;">
+
+            <!-- Loading Screen -->
+            <div u="loading" style="position: absolute; top: 0px; left: 0px;">
+                <div style="filter: alpha(opacity=70); opacity:0.7; position: absolute; display: block;
+                    background-color: #000000; top: 0px; left: 0px;width: 100%;height:100%;">
+                </div>
+                <div style="position: absolute; display: block; background: url(/static/images/loading.gif) no-repeat center center;
+                    top: 0px; left: 0px;width: 100%;height:100%;">
+                </div>
+            </div>
+
+            <!-- Slides Container -->
+            <div u="slides" style="cursor: move; position: absolute; left: 0px; top: 0px; width: 800px; height: 550px; overflow: hidden;">
+                {% for img_src in ad.images.medium %}
+                <div>
+                    <img u="image" {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}" {% else %} src="{{ img_src }}" {% endif %}/>
+                    <img u="thumb" {% if img_src|check_img_path %} src="{% static ad.images.thumbs|lookup:forloop.counter0|lstrip:"/" %}" {% else %} src="{{ ad.images.thumbs|lookup:forloop.counter0 }}" {% endif %}/>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Arrow Navigator Skin Begin -->
+            <style>
+                .jssora05l, .jssora05r, .jssora05ldn, .jssora05rdn
+                {
+                    position: fixed;
+                    cursor: pointer;
+                    display: block;
+                    /*background: url(/static/images/a15.png);*/
+                    /*background-repeat: no-repeat;*/
+                    overflow:hidden;
+                }
+                /*.jssora05r { background-position: -70px -40px; }*/
+                /*.jssora05l { background-position: -10px -40px; }*/
+                .jssora05l:hover { background-position: -130px -40px; }
+                .jssora05r:hover { background-position: -190px -40px; }
+                .jssora05ldn { background-position: -250px -40px; }
+                .jssora05rdn { background-position: -310px -40px; }
+            </style>
+
+            <!-- Arrow Left -->
+            <nav class="nav-circlepop">
+                <div u="arrowleft" class="jssora05l" style="width: 80px; height: 500px; top: 0px; left: 0px;">
+                    <a class="prev" style="margin-left:10px">
+                        <span class="icon-wrap"></span>
+                    </a>
+                </div>
+                <!-- Arrow Right -->
+                <div u="arrowright" class="jssora05r" style="width: 80px; height: 500px; top: 0px; right: 0px">
+                    <a class="next" style="margin-right:10px">
+                        <span class="icon-wrap"></span>
+                    </a>
+                </div>
+            </nav>
+            <!-- Arrow Navigator Skin End -->
+
+        
+            <!-- Thumbnail Navigator Skin Begin -->
+            <div u="thumbnavigator" class="jssort01" style="position: absolute; width: 800px; height: 100px; left:0px; bottom: 0px;">
+                <div u="slides" style="cursor: move;">
+                    <div u="prototype" class="p" style="position: absolute; width: 72px; height: 72px; top: 0; left: 0;">
+                        <div class=w><thumbnailtemplate style=" width: 100%; height: 100%; border: none;position:absolute; top: 0; left: 0;"></thumbnailtemplate></div>
+                        <div class=c>
+                        </div>
+                    </div>
+                </div>
+                <!-- Thumbnail Item Skin End -->
+            </div>
+            <!-- Thumbnail Navigator Skin End -->
+            <a style="display: none" href="http://www.jssor.com">javascript</a>
+        </div>
+    <!-- Jssor Slider End -->
+        {% else %}
+                <div id="YMapsID2" style="width: 870px; height: 550px;"></div>
+        {% endif %}
+
+            <div id="specification">
+                <div>ХАРАКТЕРИСТИКИ:</div>
+                <!--<div style="float: left; width: 420px">
+                    <div>Информация о планировке</div>
+                    <ul>
+                        <li>Количество комнат<span>5</span></li>
+                        <li>Общая площадь<span>54 м<sup>2</sup></span></li>
+                        <li>Этаж<span>5</span></li>
+                        <li>Этажность<span>10</span></li>
+                        <li>Материал стен<span>Кирпич</span></li>
+                        <li>Отделка<span>декоративная</span></li>
+                        <li>СанУзел<span>раздельный</span></li>
+                        <li>Ванна<span>акрил</span></li>
+                    </ul>
+                    <div>Коммуникации</div>
+                    <ul>
+                        <li>Электричество<span>Есть</span></li>
+                        <li>Водопровод<span>Есть</span></li>
+                        <li>Отопление<span>Есть</span></li>
+                        <li>Газ<span>Есть</span></li>
+                        <li>Канализация<span>Есть</span></li>
+                    </ul>
+                </div>
+                <div style="float: right; width: 420px">
+                    <div>Прилегающая территория</div>
+                    <ul>
+                        <li>Балкон / лоджия<span>Есть</span></li>
+                        <li>Лифт<span>Есть</span></li>
+                        <li>Электричество<span>Есть</span></li>
+                        <li>Материал крыши<span>Четкий</span></li>
+                        <li>Гараж<span>Нету</span></li>
+                    </ul>
+                    <div style="font-weight: bold">Условия сдачи / продажи</div>
+                    <ul>
+                        <li>Срок сдачи<span>1 год</span></li>
+                        <li>Предоплата<span>за 1 месяц</span></li>
+                        <li>Комнат сдается<span>5</span></li>
+                        <li>Условия продажи<span>Хрень какая-то</span></li>
+                        <li>Собственность<span>Властная</span></li>
+                        <li>Вид объекта<span>Квартира</span></li>
+                        <li>Тип объекта<span>Новостройка</span></li>
+                    </ul>
+                </div>-->
+
+                <div style="float: left; width: 420px;">
+                    {% for key in info_fields %}
+                        {% if ad|get_item:key|is_not_bool %}<li>{{ info_fields|get_item:key }}<span>{{ ad|get_item:key }}</span></li>{% endif %}
+                    {% endfor %}
+                </div>
+
+                <div style="clear: both; border-bottom: 1px solid #ebebeb; padding-top: 20px"></div>
+                <div id="another-info">
+                    <div id="technics">
+                        <div>ТЕХНИКА</div>
+                            {% for key in ad %}
+                                {% if ad|get_item:key|is_true %}
+                                    <div><img src="/static/images/OK_icon_mini.png"><span>{{key|translate_to_ru}}</span></div> 
+                                {% endif %}
+                            {% endfor %}
+                    </div>
+                    <div id="infrastructure">
+                        <div>ИНФРАСТРУКТУРА</div>
+                        <img src="/static/images/shop.png"><span>Пока ничего не найдено</span>
+                        <!--<img src="/static/images/book.png"><span>Школа №666 - 200км</span>-->
+                    </div>
+                    <div id="descript">
+                        <div>ОПИСАНИЕ:</div>
+                        <p>{{ ad.description }}</p>
+                    </div>
+<div style="display: none;"> <!-- Reviews and feedback disabled -->
+                        {% if user.is_authenticated %}
+                            <div id="rewievs">
+                            <form method="POST" enctype="multipart/form-data" action="/add-review/{{ ad.id }}">
+                            {% csrf_token %}
+                                <div id="add-contact" style="text-align:right">
+                                    <div id="add-review-text">                          
+                                        <textarea name="review" placeholder="Написать отзыв"></textarea>
+                                        <!--<div class="note"></div>-->
+                                    </div>
+                                    <button disabled>Далее</button>
+                                </div>
+                                <input type="hidden" name="username" value="{{ user.username }}">
+                            </form>
+                            <br>    
+                            {% if ad.reviews %}
+                                <div>ОТЗЫВЫ:</div>
+                                <div class="rewiev">
+                                {% for review in ad.reviews %}
+                                    <span class="nickname">{{ review.username }}</span>
+                                    <span class="date">{{ review.date }}</span>
+                                    <p>{{ review.text }}</p>
+                                
+                                    {% if review.feedback %}
+                                        <div style="margin: 0 0 0 5%">
+
+                                        {% for feedback in review.feedback %}
+                                                <span class="nickname">{{feedback.username}}</span>
+                                                <span class="date">{{feedback.date}}</span>
+                                                <p>{{feedback.text}}</p>
+                                        {% endfor %}
+
+                                        </div>
+
+                                    {% endif %}
+                                <div id="add-contact" style="text-align:right">
+                                    <button review-id="{{review.review_id}}" class="feedback" style="width: 80px;height: 30px">Ответ</button>
+                                </div>
+
+                                <form method="POST" enctype="multipart/form-data" action="/feedback/{{ ad.id }}/{{review.review_id}}" style="text-align:right; display: none;" class="feedback-{{review.review_id}}">
+                                    <div id="add-contact">
+                                        <div id="add-review-text">                          
+                                            <textarea name="feedback" placeholder="Ответ"></textarea>
+                                        </div>
+                                        <button style="width: 150px;height: 40px" disabled>Отправить ответ</button>
+                                    </div>
+                                    <input type="hidden" name="username" value="{{ user.username }}">
+                                    {% csrf_token %}
+                                </form>
+
+
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+</div> <!-- Reviews and feedback disabled -->
+                        </div>
+                    </div>
+                </div>
+        <div id="ramdom_ads">
+        {% for ad in random_ads %}
+            <div class="small-poster" style="margin-right:17px">{% include "adverts_block.html" %}</div>
+        {% endfor %}
+        </div>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+
+
+</div>
+
+
+</div>
+{% if ad.images.original %}
+    <script type="text/javascript" src="/static/js/image-slider/jssor.js"></script>
+    <script type="text/javascript" src="/static/js/image-slider/jssor.slider.js"></script>
+    <script type="text/javascript" src="/static/js/image-slider.js"></script>
+{% else %}
+    {% if ad.image_map %}
+    {% else %}
+        <!--<script type="text/javascript" src="/static/js/html2canvas.js"></script>-->
+    {% endif %}
+{% endif %}
+<script type="text/javascript">
+$(function (){
+    $("#map_toggle_link").hide();
+    ymaps.ready(init);
+
+    $(function (){
+        $("textarea").on("keyup", function (e){
+            if ( String($(this).val()).length > 9 ){
+                $(this).parent().next().prop( "disabled", false );
+            }else {
+                $(this).parent().next().prop( "disabled", true );
+            }    
+        });
+    });
+
+    $(function (){
+        $("div.side-filter-link.calc-tab").on("click", function (e){
+            //alert( $(this).attr("data-value") );
+            delete _obj["cat_tab_0"];
+            delete _obj["group_0"];
+            _obj["cat_tab_0"] = $(this).attr("data-value");
+            _obj["group_0"] = "living";
+        //     console.log(e);
+        //     _obj = {};
+        //     _obj[$(this).find(".select").data("type")] = $(this).find(".select").data("selected");
+        //     _obj[$("#group_switcher").find(".active").data("type")] = $("#group_switcher").find(".active").data("value")
+            ajaxPost("{% url 'get_cat_types' %}", _obj, function (data){
+                $("#id_cat_type").find("ul").empty();
+                $.each(data, function (i, el){
+                    $("#id_cat_type").find("ul").append(
+                        $("<li/>", {
+                            text: el[1], 
+                            "data-value": el[0], 
+                            class: "option"
+                        }
+                    ));
+                });
+            });
+
+            ajaxPost( "/ajax/get_filter/", _obj, function( data ) {
+                $("#my_filter").html( data )
+            });
+        });
+    });
+
+    // $(document).ready(function(){
+    //     $('title').text("{{ad.title}}");
+    //     $('meta[name=keywords]').attr('content', '{{ad.action_type}}' + ', {{ad.cat_type|translate_to_ru2}}' + ', {{ad.region}}' {% if ad.region2 %} + ', {{ad.region2}}'  {% endif %} );
+    //     $('meta[name=description]').attr('content', $("#descript > p").text());
+    // });
+
+})
+
+
+function init () {
+    var no_result_map = true;
+    ymaps.geocode('{{ ad.region }}, {{ ad.address }}, {% if ad.house %} {{ ad.house }} {% endif %}', { results: 1 }).then(function (res) {
+
+        var firstGeoObject = res.geoObjects.get(0);
+
+        {% if ad.images_len > 0 %}
+            var index = ""
+        {% else %}
+            var index = "2"
+        {% endif %}
+
+        if(firstGeoObject) {
+            window.myMap = new ymaps.Map("YMapsID"+index, {
+                center: firstGeoObject.geometry.getCoordinates(),
+                zoom: 16,
+                behaviors: ['default', 'scrollZoom'],
+                controls: ['fullscreenControl'],
+            });
+            // myMap.controls.add('smallZoomControl', { right: 5, top: 75 });
+
+
+            // myMap.controls
+            //             // .add('zoomControl')
+            //             // .add('typeSelector')
+            //             .add('smallZoomControl', { right: 5, top: 75 })
+            //             // .add('mapTools')
+            // // .add('trafficControl')
+            // .add(new ymaps.control.ScaleLine());
+
+            myMap.geoObjects.add(firstGeoObject);
+
+            // ymaps.geocode(myMap.getCenter(), {
+            //     boundedBy: myMap.getBounds(),
+            //     results: 1
+            // }).then(function (res) {
+            //     myMap.geoObjects.add(res.geoObjects);
+            // });
+
+            // $('#YMapsID > ymaps').resizable({'handle': '.map_handle', 'callback': myMap.container});
+        }
+        else
+        {
+            if (no_result_map) {
+                window.myMap = new ymaps.Map("YMapsID"+index, {
+                    center: [ 55.916224, 37.854503],
+                    zoom: 16
+                });
+                // $('#YMapsID > ymaps').resizable({'handle': '.map_handle', 'callback': myMap.container});
+            }
+            else
+            {
+                $('#YMapsID'+index).hide();
+            }
+        }
+    }, function (err) {
+        window.myMap = new ymaps.Map("YMapsID"+index, {
+            center: [ 55.916224, 37.854503],
+            zoom: 16
+        });
+        // $('#YMapsID > ymaps').resizable({'handle': '.map_handle', 'callback': myMap.container});
+    })
+}
+</script>
+{% endblock one_card %}

@@ -1,0 +1,31 @@
+{% load staticfiles %}
+{% load filters %}
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between">
+{% for ad in ads %}
+    
+        <div class="small-poster">
+            <a href="{% url 'card' ad.id %}">
+            {% if ad.images.original %}
+                {% for img_src in ad.images.original|slice:":1" %}
+                    <img {% if forloop.counter0 == 0 %}class="main"{% endif %} {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}" {% else %} src="{{ img_src }}" {% endif %}>
+                {% endfor %}
+            {% else %}
+                <img class="main">
+            {% endif %}
+            </a>
+            <h1><a href="{% url 'card' ad.id %}">{{ ad.title|truncatechars:26 }}</a></h1>
+            <h2>{{ ad.region }} | {{ ad.address }}</h2>
+            <div class="square">
+                <span>Комнат</span>
+                <div>{{ ad.number_of_rooms }}</div>
+                <span>Площадь</span>
+                <div>{{ ad.total_area }}/{{ ad.living_area }}/{{ ad.kitchen_area }}</div>
+            </div>
+            <div class="small-poster-price">
+                <div class="price">{{ ad.price|stringformat:".0f"|intspaces }} {{ ad.currency }}</div>
+               <!-- <div class="course">По курсу: $20.99</div>-->
+            </div>
+        </div>
+    
+{% endfor %}
+</div>

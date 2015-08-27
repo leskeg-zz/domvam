@@ -1,0 +1,9 @@
+<form method="POST" enctype="multipart/form-data" action="/action-card">
+    {% csrf_token %}
+    <input type="text" name="ObjectId" value="{{ad.id}}" hidden>
+    <div id="add-contact" align="left">
+            <button style="width: 80px;height: 30px;margin-top:10px;font-size:80%;cursor:pointer" name="_extend" value="{{ad.id}}">продлить</button>
+            <button style="width: 100px;height: 30px;margin-top:10px;font-size:80%;cursor:pointer" review-id="0" name="_edit" value="{{ad.id}}">редактировать</button>
+            <button style="width: 80px;height: 30px;margin-top:10px;font-size:80%;cursor:pointer"review-id="0" name="_delete" value="{{ad.id}}">удалить</button>
+    </div>
+</form>

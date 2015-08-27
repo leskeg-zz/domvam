@@ -1,0 +1,21 @@
+{% load assets %}
+
+<head>
+    <title>{% block title %}Недвижимость{% endblock title %}</title>
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+</head>
+
+
+{{ mys_message|safe }}
+
+<script type="text/javascript">
+	$(function(){
+		{% if redirect %}
+			setTimeout(function () {
+				window.location.pathname = '/';
+			}, 2000);
+		{% endif %}
+	});
+</script>

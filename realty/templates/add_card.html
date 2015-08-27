@@ -1,0 +1,1862 @@
+{% extends "base.html" %}
+{% load filters %}
+{% load staticfiles %}
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}
+    
+{% endblock map_header %}
+
+
+{% block body_content %}
+        <div id="drag-overlay"></div>
+
+<script type="text/javascript">
+    $(function (){
+        obl = '';
+        raion = '';
+        name = '';
+        street = '';
+
+        mykeydown = jQuery.Event("keydown");
+        mykeydown.which = 40;
+
+        $("#id_address").autocomplete({
+            delay: 500,
+            minLength: 3,
+            source: function(request, response) {
+                $("#id_region_0").find("ul").css("height","34px");
+                ajaxGet("/ajax/get_region_autocomplete", {'obl': obl, 'raion':raion, 'name': name, 'autocompleteStreet':'', 'address' : request.term }, function (data){
+                    response(data);
+                    $(".ui-autocomplete").on('click', function(){
+                        setTimeout(
+                          function() 
+                          {
+                            street = $('#id_address').val();
+                          }, 300);
+
+                    });
+                });
+
+            },
+            focus: function(event, ui) {
+                // prevent autocomplete from updating the textbox
+                event.preventDefault();
+            },
+            select: function(event, ui) {
+                // prevent autocomplete from updating the textbox
+                event.preventDefault();
+                $(this).val(ui.item.value)
+                // navigate to the selected item's url
+                // window.open(ui.item.url);
+            }
+        });
+
+
+        $("#autocomplete").autocomplete({
+            delay: 500,
+            minLength: 3,
+            source: function(request, response) {
+                $("#id_region_0").find("ul").css("height","34px");
+                ajaxGet("/ajax/get_region_autocomplete", {'name' : request.term, 'autocomplete':''}, function (data){
+                    response(data);
+                    $(".ui-autocomplete").on('click', function(){
+                        // $('#autocomplete').click();
+                        $('#autocomplete').trigger(mykeydown);
+                        setTimeout(
+                          function() 
+                          {
+                            $("#region_0_id").find("span").first().text( $('#autocomplete').val() );
+                            $('ul').removeClass("show");
+                            var place = $('#autocomplete').val();
+                            // $('#autocomplete').val("");
+                            
+                            if (place.indexOf('(') > -1){
+                                var place_split = place.replace(".","").replace(",","").replace("(","").replace(")","").split(" ");
+                                name = place_split[0] + '. ' + place_split[1];
+                                raion = place_split[place_split.length - 1];
+                                obl = place_split[2] + ' ' + place_split[3];
+                            }else{
+                                raion = '';
+                                name = place;
+                                switch (place) {
+                                    case "г. Брест":
+                                        obl = "Брестская область";
+                                        break;
+                                    case "г. Витебск":
+                                        obl = "Витебская область";
+                                        break;
+                                    case "г. Гомель":
+                                        obl = "Гомельская область";
+                                        break;
+                                    case "г. Гродно":
+                                        obl = "Гродненская область";
+                                        break;
+                                    case "г. Минск":
+                                        obl = "Минская область";
+                                        break;
+                                    case "г. Могилев":
+                                        obl = "Могилевская область";
+                                        break;
+                                }
+                            }
+                            
+                          }, 300);
+
+
+                    });
+                });
+
+            },
+            focus: function(event, ui) {
+                // prevent autocomplete from updating the textbox
+                event.preventDefault();
+            },
+            select: function(event, ui) {
+                // prevent autocomplete from updating the textbox
+                event.preventDefault();
+                $(this).val(ui.item.value)
+                // navigate to the selected item's url
+                // window.open(ui.item.url);
+            }
+        });
+
+        $("#autocomplete").keyup(function (e){
+            $("#id_region__0 ul").hide();
+            $("#id_region___0 ul").hide();
+            if ( $("#autocomplete").val().length < 3 ){
+                $(".ui-autocomplete").hide();
+                $("#id_region_0").find("ul").css("height","auto");
+            }            
+        });
+
+        $("[name='region_0'] li").on("click", function(){
+            $('#id_region_1').val( $(this).text() );
+        });
+
+        $("#add_card_region_ ul").on('click',function(){
+            $("#region_0_id").click();
+            setTimeout(
+              function() 
+              {
+                $("#region_0_id").find("span").first().text( $('#id_region__1').val() );
+                // dont_close_dropdown = false;
+                // first_time = true;
+              }, 300);
+        });
+
+        $("#add_card_region__ ul").on('click',function(){
+            // $("#region_0_id").click();
+            setTimeout(
+              function() 
+              {
+                $("#region_0_id").find("span").first().text( $('#id_region___1').val() );
+                name = $('#id_region___1').val();
+                in_process = false;
+                $('#region_0_id').click();
+              }, 300);
+        });
+
+        first_time = true;
+        second_time = true;
+        in_process = false;
+        $('#region__0_id').hide();
+        $('#id_region___0 ul').css('width','354px')
+
+        $(".select-wrap2 > .select").click(function (event){
+            dont_close_dropdown = true
+            var oldHeight = $(this).parent().find("ul").height();
+            if ( !in_process ) { $(this).parent().find("ul").toggleClass("show");}
+            var newHeight = $(this).parent().find("ul").height();
+            $(this).parent().find("ul").addClass("show");
+            if(newHeight > oldHeight) {
+                $(this).css("z-index", 4)
+            }
+            $(this).parent().find("ul").css("height", oldHeight).animate({height: newHeight}, 100, function () {
+                $(this).parent().find("ul").css("height", "");
+                if(newHeight < oldHeight) {
+                    $("#id_region__0 ul").hide();
+                    $("#id_region___0 ul").hide();
+                    dont_close_dropdown = false;
+                    first_time = true;
+                    second_time = true;
+                    $(this).parent().find("ul").removeClass("show");
+                    $(this).parent().find(".select").css("z-index", 2);
+                }
+            })
+            event.stopPropagation();
+        });
+
+        $(document).on("click", ".option", function(event) {
+            
+            $.proxy(function (event){
+                var nowContent = $(this).parents(".select-wrap2").find(".select span").html();
+
+                $(this).parents(".select-wrap2").find(".select span").html($(this).html());
+                $(this).parent().prev().css("z-index", 2);
+
+                var newContent = $(this).parents(".select-wrap2").find(".select span").html();
+                $(this).parent().prev().css("z-index", 2)
+                if (nowContent != newContent) {
+                    /* событие change */ //alert("change");
+                    $(this).parent().prev().data("selected", $(this).data("value"));
+                    $(this).parent().prev().trigger("change");
+                }
+            }, event.target)(event);
+        });
+
+
+
+
+
+
+
+
+
+        $('.switcher_add_card').children().removeClass('active');
+
+        // $('#id_contact_name').val('user');
+
+        var sheet = (function() {
+            // Create the <style> tag
+            var style = document.createElement("style");
+
+            // Add a media (and/or media query) here if you'd like!
+            // style.setAttribute("media", "screen")
+            // style.setAttribute("media", "only screen and (max-width : 1024px)")
+
+            // WebKit hack :(
+            style.appendChild(document.createTextNode(""));
+
+            // Add the <style> element to the page
+            document.head.appendChild(style);
+
+            return style.sheet;
+        })();
+
+        $('#sendForm').on("click",function(){
+            sheet.insertRule('input:invalid{ outline: 2px solid red; }', sheet.cssRules.length); 
+            sheet.insertRule('input:focus:invalid { color: red; }', sheet.cssRules.length); 
+            sheet.insertRule('input:not(:focus):invalid { outline: 2px solid red; }', sheet.cssRules.length); 
+            sheet.insertRule('input:focus:invalid { outline: 2px solid red; }', sheet.cssRules.length);
+            $.each($( "input:hidden" ), function( index, value ) {
+                if ( $(value).val() == "" && $(value).attr('required') == "required" ){
+                    $(value).prev().css('border','2px solid red');
+                }
+            });
+            $.each($( "textarea" ), function( index, value ) {
+                if ( $(value).val() == "" && $(value).attr('required') == "required" ){
+                    $(value).css('border','2px solid red');
+                    $("textarea").on("keyup", function (){
+                        if ( $(value).val() == "" ) { $(value).css('border','2px solid red'); }else{ $(value).css('border',''); }
+                });
+                }
+            });
+        });
+
+        // $('#search2_1_sale').on("click", function(){
+        //     if ( $(this).find('.checkbox').attr("checked") == "checked"){
+        //         $('exchange_desc').show();
+        //     }else{
+        //         $('exchange_desc').hide();
+        //     }
+        // });
+
+        // $('.login_or_register').on('click',function(){
+        //     var id = $(this).attr('id');
+        //     var myurl = "ajax/ajax_"+id;
+        //     var mydata = new FormData();
+
+        //     if (id == 'login'){
+        //         mydata.append('username',$('#id_usernameL').val());
+        //         mydata.append('password', $('#id_passwordL').val());
+        //         if ( check_empty('#id_usernameL') ){ alert('username empty'); return false;};          
+        //         if ( check_empty('#id_passwordL') ){ alert('password empty'); return false;};                 
+        //     }else if (id == 'register'){
+        //         mydata.append('username', $('#id_usernameR').val());
+        //         mydata.append('email', $('#id_emailR').val());
+        //         mydata.append('password', $('#id_passwordR').val());
+        //         if ( check_empty('#id_usernameR') ){ alert('username empty'); return false;};                 
+        //         if ( check_empty('#id_emailR') ){ alert('email empty'); return false;};                 
+        //         if ( check_email('#id_emailR') ){ alert('email incorrect'); return false;};                 
+        //         if ( check_empty('#id_passwordR') ){ alert('password empty'); return false;};                 
+        //     }
+
+        //     mydata.append('csrfmiddlewaretoken',$("[name='csrfmiddlewaretoken'").val());
+            
+        //     jQuery.ajax({
+        //         url : myurl,
+        //         type : "POST",
+        //         processData: false,
+        //         contentType: false,
+        //         data: mydata,
+        //         success: function(data){
+        //             if (typeof data.content.error != "undefined"){
+        //                 alert(data.content.error);
+        //             }else{
+        //                 $('#regist').append('<div style="margin-right: 10px"><a href="/user-profile">Профиль</a></div>');
+        //                 $('#regist').append('<div style="margin-right: 10px"><a href="/favorite-cards">Избранные</a></div>');
+        //                 $('#regist').append('<div style="margin-right: 10px"><a href="/my-cards">Мои объявления</a></div>');
+        //                 $('#regist').append('<div><a href="/logout">Выход</a></div>');
+        //                 $($('#regist').children()[1]).remove();
+        //                 $($('#regist').children()[1]).remove();
+        //                 $('.close_popup').click();
+        //                 $('#user_not_logged').hide();
+        //             }
+        //         }
+        //     });
+
+        // });
+
+
+        $('li.option').on("click",function(){
+            $(this).parent().parent().parent().children().first().css('border','1px solid rgba(0,0,0,0.1)');
+            $(this).parent().parent().parent().children().css('border','');
+        });
+
+        $('.room').on("click",function(){
+            $(this).parent().css('border','');
+        });
+    
+        $("#add_card_form").submit(function(event) {
+            event.preventDefault();
+            var req_hidden = 'REQUIRED:';
+
+            $.each($( "#add_card_form input:hidden" ), function( index, value ) {
+                if ( $(value).val() == "" && $(value).attr('required') == "required" ){
+                    // alert($(value).parent().find('span').text());
+                    $(value).prev().css('border','1px solid red');
+                    req_hidden = req_hidden + '\n\r-' +$(value).parent().find('span').text();
+                }
+            });
+            
+            if ( req_hidden != 'REQUIRED:'){
+                // alert(req_hidden);
+                return;
+            }
+
+            var new_card_form = new FormData();
+            // var region2_bck = $('#id_region__1').val();
+            $('#id_region__1').val('');
+            $.each($("input"), function( index, value ) {
+                if ( $(value).parent().hasClass("checkbox") ){
+                    if ( !($(value).parent().attr("checked") == "checked") ){
+                        return;
+                    }
+                }
+                new_card_form.append($(value).attr("name"), $(value).val());
+            });
+
+            new_card_form.append($('[name="exchange_description"]').attr('name'), $('[name="exchange_description"]').val());
+            new_card_form.append($('[name="description"]').attr('name'), $('[name="description"]').val());
+            new_card_form.append("obl", obl);
+            new_card_form.append("raion", raion);
+            new_card_form.append("name", name);
+            new_card_form.append("description", $('#id_description').val());
+            new_card_form.append("house", $('#id_house').val());
+
+            {% if editform %}
+            new_card_form.append('_edit','_edit');
+
+            $.each(stored_imgs, function(index,element){
+                stored_imgs[index] = element.replace('-small','');
+            });
+
+            new_card_form.append('stored_imgs', stored_imgs);
+            {% endif %}
+
+
+            $('#screen').css({  "display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+            $('#popup_loading').css({"display": "block"});
+            window.scrollTo(0, 0)
+            var ObjectId = '';
+            jQuery.ajax({
+                url :"/ajax/ajax_add_card",
+                type : "POST",
+                processData: false,
+                contentType: false,
+                data: new_card_form,
+                success: function(data){
+                    console.log(data.content);
+                    // if ( data.content.indexOf('Django') == -1 ){
+                    if ( typeof(data.content) == "string" && data.content.indexOf('Django') == -1 ){
+                        ObjectId = data.content;
+                        // window.location.href = "/card" + data.content;
+
+                        var file_size = 0;
+                        $.each(uniqueImgNames, function( index, value ) {
+                            file_size = file_size + value.size;
+                        });
+
+                        if ( file_size > 204800000 ){
+                            $('#popup_loading').hide();
+                            $('.popup_message').show();
+                            $('.close_popup').click(function(){
+                                $('#screen').css("display", "none");
+                                $('.popup_message').css("display", "none");
+                            });
+                            $('#id_region__1').val($('#id_region2').val());
+                            return
+                            // alert(file_size);
+                        }else{
+                            $('#img_uploading_progress').html('Форма успешно отправлено<br>').css({ 'color': 'green', 'font-size': '150%' });
+                            
+                            var number_of_upload_images = 1
+                            if (uniqueImgNames.length > 0){
+                                $('#img_uploading_progress').html( 'Форма успешно отправлено<br>обработка изображений...<br>' + number_of_upload_images++ + ' из ' + uniqueImgNames.length + '<br>подождите пожалуйста');
+                            }
+                            
+                            $.each(uniqueImgNames, function( index, value ) {
+                                var new_card_form = new FormData();
+                                new_card_form.append('ObjectId',ObjectId);
+                                new_card_form.append('file', value);
+
+                                (function (index) {
+                                    jQuery.ajax({
+                                        url :"/ajax/ajax_upload_image",
+                                        type : "POST",
+                                        processData: false,
+                                        contentType: false,
+                                        // async:false,
+                                        data: new_card_form,
+                                        success: function(data){
+                                            if ( data.status == 200 ){
+                                                // $('#img_uploading_progress').html( 'Форма успешно отправлено<br>обработки изображений...<br>' + number_of_upload_images++ + ' of ' + uniqueImgNames.length);
+                                            }else {
+                                                alert("Oops something wrong :(\n" + data.content.substring(0,80));
+                                            }
+                                            // $('#popup_loading').css({"display": "none"});
+                                            // $('#screen').css("display", "none");
+                                        },
+                                        complete: function(response){
+                                            if ( number_of_upload_images > uniqueImgNames.length  ){
+                                                    window.location.href = "/card" + ObjectId;
+                                            }else{
+                                                $('#img_uploading_progress').html( 'Форма успешно отправлено<br>обработка изображений...<br>' + number_of_upload_images++ + ' из ' + uniqueImgNames.length + '<br>подождите пожалуйста');
+                                            }
+                                        } 
+                                    });
+                                })(index);
+
+                            });
+                            if ( uniqueImgNames.length == 0 ){
+                                window.location.href = "/card" + data.content;
+                            }
+                        }  
+
+                    }else {
+                        alert("Oops something wrong :(\n" + data.content.substring(0,80));
+                    }
+                    // $('#popup_loading').css({"display": "none"});
+                    // $('#screen').css("display", "none");
+                }
+            });
+            // $('#id_region__1').val(region2_bck);
+        });
+
+        $(".select").off("change");
+        $(".filter-link").off("click");
+
+        $(".switcher_add_card > div").click(function () {
+            if ($(this).hasClass("active")) {
+                $(this).removeClass("active");
+            }else{
+                $(this).addClass("active");
+            }
+            // $(this).parent(".switcher").find("div").removeClass("active");
+
+            $(this).parent().trigger("change");
+        });
+
+        $(".checkbox").on("click", function (e){
+            if ($(this).attr('id') == 'account_login') {
+                $(this).attr('checked','checked');
+                $('.register_or_login#login').click();
+                window.scrollTo(0, 0);
+                return
+            }
+            if ($(this).attr('id') == 'account_register'){
+                $(this).attr('checked','checked');
+                $('.register_or_login#register').click();
+                window.scrollTo(0, 0);
+                return
+            }
+
+            if ($(this).children().attr('id') == "id_agreement") {
+                if ($('#user_not_logged').css('display')!='block'){
+                    if ( $(this).attr("checked") == "checked" ){
+                        $('#sendForm').attr('disabled','disabled');
+                        $('#sendForm').addClass( "grayscale" );
+                    }else{
+                        $('#sendForm').removeAttr('disabled');
+                        $('#sendForm').removeClass( "grayscale" );  
+                    }
+                }else{
+                    $('#user_not_logged').css('border','2px solid red');
+                    $('#id_agreement').parent().attr('checked','checked');
+                }
+                return
+            }
+
+            // if ($(this).children().attr('id') == "id_exchange") {
+            //     $('#add_card_exchange_description').toggle('slow');
+            // }
+        });
+
+        // if ( String($('#action_type_switcher > input').val()).indexOf('rent') > -1 ) {
+        //     $('#action_type_0_rent').addClass( "active" );
+        //     $("#search2_1_rent").show();
+        // }else{
+        //     $('#action_type_0_rent').removeClass( "active" );
+        //     $("#search2_1_rent").hide();
+        // }
+
+        // if ( String($('#action_type_switcher > input').val()).indexOf('sale') > -1 ) {
+        //     $('#action_type_0_sale').addClass( "active" );
+        //     $("#search2_1_sale").show();
+            
+        // }else{
+        //     $('#action_type_0_sale').removeClass( "active" );
+        //     $("#search2_1_sale").hide();
+        // }        
+
+        // Rewrite this in more convient way
+        $("#living-commercial > div").on("click", function (e){
+            _obj = {};
+            _obj[$(this).data("type")] = $(this).data("value");
+            $('#id_group_1').val($(this).data("value"));
+            // _obj["group_0"] = "living"; 
+
+            ajaxPost("{% url 'get_cat_tabs' %}", _obj, function (data){
+            // ajaxPost("{% url 'get_cat_types' %}", {}, function (data){
+
+                $("#id_cat_tab_0").find("ul").empty();
+                $.each(data, function (i, el){
+                    $("#id_cat_tab_0").find("ul").append(
+                        $("<li/>", {
+                            text: el[1], 
+                            "data-value": el[0], 
+                            class: "option"
+                            }
+                        )
+                    );
+                });
+                $('#id_cat_tab_0 li').first().click();
+            });
+
+            $(this).find("input").val($(this).find(".active").data("value"));
+        });
+
+        $("#action_type_switcher").on("change", function (e){
+            _obj = {};
+            var actives = $(this).find(".active")
+            var s = ""
+            $(this).find("input").val("")
+            for (i = 0; i < actives.length; i++) {
+                if (i==0) { 
+                    s = $(actives[i]).data("value") 
+                }else{
+                    s = s + ' ' + $(actives[i]).data("value")
+                }
+                $(this).find("input").val(s);
+            }
+
+            if ($(this).find("input").val() == "") {
+                $('#myform').hide();
+            }else {
+                $('#myform').show();
+            }
+
+            // check_sale();
+            change_form();
+        });
+
+        // $("#id_cat_tab").on("change", function (e){
+        $("#id_cat_tab_0").on("change", function (e){
+            _obj = {};
+            _obj[$(this).find(".select").data("type")] = $(this).find(".select").data("selected");
+            _obj[$("#living-commercial").find(".active").data("type")] = $("#living-commercial").find(".active").data("value")
+
+            if ($("#cat_type_0_id").children().text() != ""){
+                $("#cat_type_0_id").children().text(""); 
+            }
+
+            ajaxPost("{% url 'get_cat_types' %}", _obj, function (data){
+                $("#id_cat_type_0").find("ul").empty();
+                $.each(data, function (i, el){
+                    $("#id_cat_type_0").find("ul").append(
+                        $("<li/>", {
+                            text: el[1], 
+                            "data-value": el[0], 
+                            class: "option"
+                        }
+                    ));
+                });
+
+                if ( $('#id_group_1').val() == 'commercial' ){
+                    $('#id_cat_type_0 li').first().click();
+                };
+                // check_sale();
+            });
+
+            $('#id_cat_type_1').removeAttr('value');
+            $(this).next().val($(this).find(".select").data("selected"));
+
+            change_form();
+            default_cat_type();
+         });
+
+        $("#id_cat_type_0").on("change", function (e){
+             $(this).next().val($(this).find(".select").data("selected"));
+             change_form();
+        });
+
+        $(".select-wrap").on("change", function(e){
+           $(this).next().val($(this).find(".select").data("selected")); 
+        })
+
+        $("#id_number_of_rooms_0").on("click", function (e){
+            $(this).next().val($(e.target).data("value"));
+            $(this).find("buttons").removeClass("showR");
+            $(e.target).addClass("showR")
+        });
+
+        // load from input values to custom divs:
+        $("input[type='hidden']").filter(function (){
+            if (/captcha/i.test($(this).attr("name")) || "csrfmiddlewaretoken" == $(this).attr("name")){
+                return false;
+            }
+            return $(this).val() != "";
+        }).each(function (i, el){
+            _val = $(this).val()
+            if ($(this).parent().hasClass("switcher")){
+                // group select
+                $(this).parent().find("[data-value='"+_val+"']").addClass("active")
+
+            }else if ($(this).prev().hasClass("select-wrap")){
+                // dropdown
+                $(this).prev().find("[data-value='"+_val+"']").trigger("click");
+                $(this).prev().find("ul").removeClass("show");
+
+
+            }else if ($(this).prev().hasClass("button-chooser")){
+                // button selecter
+                $(this).prev().find("buttons[data-value='"+_val+"']").addClass("showR")
+            }
+        });
+        $("input[type='checkbox']").each(function (i, el){
+            if ($(el).is(":checked")){
+                $(el).parent().attr("checked", "checked");
+            }
+            
+        });
+
+        $("#action_type_switcher").on("click", function (e){
+            if ($("#action_type_0_rent").hasClass("active")){
+                $("#search2_1_rent").show();
+            }else{
+                $("#search2_1_rent").hide();
+            }
+            if ($("#action_type_0_sale").hasClass("active")){
+                $("#search2_1_sale").show();
+                // if ($('#id_exchange').parent().attr('checked') == "checked") {
+                //     $('#add_card_exchange_description').show();
+                // }
+            }else{
+                $("#search2_1_sale").hide();
+            }
+        });
+
+
+
+        if ($("#heating_0_id").children().text() == ""){
+            $("#heating_0_id").children().text("Отопление"); 
+        }      
+
+        if ($("#region_0_id").children().text() == ""){
+            $("#region_0_id").children().text("Выбор региона, города"); 
+        }
+        if ($("#balcony_deck_0_id").children().text() == ""){
+            $("#balcony_deck_0_id").children().text("Балкон / Лоджия"); 
+        }
+        if ($("#wall_material_0_id").children().text() == ""){
+            $("#wall_material_0_id").children().text("Материал стен"); 
+        }
+        if ($("#flooring_0_id").children().text() == ""){
+            $("#flooring_0_id").children().text("Полы"); 
+        }
+        if ($("#repair_0_id").children().text() == ""){
+            $("#repair_0_id").children().text("Ремонт"); 
+        }
+        if ($("#wc_0_id").children().text() == ""){
+            $("#wc_0_id").children().text("Санузел"); 
+        }
+        // if ($("#type_of_house_0_id").children().text() == ""){
+        //     $("#type_of_house_0_id").children().text("Тип дома"); 
+        // }
+        if ($("#period_0_id").children().text() == ""){
+            $("#period_0_id").children().text("Срок аренды"); 
+        }
+        if ($(".option").children().text() == "None"){
+            $("#period_0_id").children().text("Срок аренды"); 
+        }
+        if ($("#period_0_id").children().text() == "--"){
+            $("#period_0_id").children().text("Срок аренды"); 
+        }
+        // $('#id_region_0 li.option').first().remove();
+        $('#id_wall_material_0 li.option').first().remove();
+        $('#id_repair_0 li.option').first().remove();
+        // $("#group_0_living").trigger("click");
+        // $("#cat_tab_0_id").trigger("click");
+        // setTimeout(function(){
+        //     $( "ul.show > li:lt( 1 )" ).trigger("click");
+        //     $("#cat_type_0_id").trigger("click");
+        //     setTimeout(function(){$( "ul.show > li:lt( 3 )" ).trigger("click");},80);
+        // },80);
+        // $("#action_type_0_rent").trigger("click");
+        hide_all();
+
+        $('#add_card_region .select').on('change', function(){
+            
+            if ( $(this).attr("id") == "region_0_id") {
+                $.each($('[name="region__0"]'),function(index,value){
+                    $(value).children().first().children().text('');
+                });
+                var myobl = $(this).children().first().text();
+                raion = '';
+                name = '';
+                ajaxGet("/ajax/get_region_autocomplete", {'region' : $(this).children().first().text(), 'search':'' }, function (data){
+                    if ( data.length > 0) {
+                        $.each($('[name="region__0"]'),function(index,value){
+                            $(value).find("ul").empty();
+                            $.each(data, function (i, el){
+                                $(value).find("ul").append(
+                                    $("<li/>", {
+                                        text: el, 
+                                        "data-value": el, 
+                                        class: "option"
+                                        }
+                                    )
+                                );
+                            });
+                        });
+                        $('#id_region__0 ul').addClass("show");
+                        $("#id_region__0 ul").show();
+                        $('#id_region__1').val('');
+                        $('#id_region__0').css("padding-left","354px");
+                        if ( first_time ) { $('#region__0_id').click(); }
+                        first_time = false;
+                        in_process = true;
+                        obl = myobl;
+
+                        {% if editform and ad.region2 %} 
+                            if ( load_regions ) { 
+                                $('#id_region__0').find('li:contains("{{ad.region2}}")').click();
+                                $('#id_region__0').find('li:contains("{{ad.region2}}")').css('background','#444');
+                                $('#id_region__0').find('li:contains("{{ad.region2}}")').css('color','white');
+                                load_regions = false; 
+                            }
+                        {%endif%}
+
+                    }else{
+                        $('#id_region__0 ul').removeClass("show");
+                        $('#id_region__0 ul').hide();
+                        in_process = false;
+                        name = myobl;
+                        obl = '';
+                        raion = '';
+                    }
+                    $('#id_region___0 ul').removeClass("show");
+                    $('#id_region___0 ul').hide();
+                    return
+                });
+            }
+            if ( $(this).attr("id") == "region__0_id") {
+                $.each($('[name="region___0"]'),function(index,value){
+                    $(value).children().first().children().text('');
+                });
+                var myraion = $(this).children().first().text()
+                name = '';
+                if ( obl.indexOf(' Область') > -1 ){
+                    ajaxGet("/ajax/get_region_autocomplete", {'region' : $(this).children().first().text(), 'search':'' }, function (data){
+                        if ( data.length > 0 ) {
+                            $.each($('[name="region___0"]'),function(index,value){
+                                $(value).find("ul").empty();
+                                $.each(data, function (i, el){
+                                    $(value).find("ul").append(
+                                        $("<li/>", {
+                                            text: el, 
+                                            "data-value": el, 
+                                            class: "option"
+                                            }
+                                        )
+                                    );
+                                });
+                            });
+                            $("#add_card_region__").show();
+                            $("#region___0_id").hide();
+                            $('#id_region___1').val('');
+                            $('#id_region___0').css("padding-left","708px");
+                            if ( second_time ) { $('#region___0_id').click(); }
+                            second_time = false;
+                            // dont_close_dropdown = false;
+                            $("#id_region___0 ul").show();
+                            $('#id_region___0 ul').addClass("show");
+                            raion = myraion;
+
+                            {% if editform and ad.region3 %} 
+                            if ( load_regions2 ) { 
+                                $('#id_region___0').find('li:contains("{{ad.region3}}")').click();
+                                $('#id_region___0').find('li:contains("{{ad.region3}}")').css('background','#444');
+                                $('#id_region___0').find('li:contains("{{ad.region3}}")').css('color','white');
+
+                                load_regions2 = false; 
+                            }
+                            {%endif%}
+
+                        }else{
+                            raion = '';
+                            setTimeout(
+                              function() 
+                              {
+                                in_process = false;
+                                $('#region_0_id').click();
+                              }, 300);
+
+                        }
+                        return
+                    });
+                }else{
+                    name = obl;
+                    raion = myraion;
+
+                    switch (name) {
+                        case "г. Брест":
+                            obl = "Брестская область";
+                            break;
+                        case "г. Витебск":
+                            obl = "Витебская область";
+                            break;
+                        case "г. Гомель":
+                            obl = "Гомельская область";
+                            break;
+                        case "г. Гродно":
+                            obl = "Гродненская область";
+                            break;
+                        case "г. Минск":
+                            obl = "Минская область";
+                            break;
+                        case "г. Могилев":
+                            obl = "Могилевская область";
+                            break;
+                    }
+
+                    setTimeout(
+                      function() 
+                      {
+                        in_process = false;
+                        $('#region_0_id').click();
+                      }, 300);
+                }
+
+            }
+        });
+
+        $('#add_card_region_ .select').on('change', function(){
+            $(this).parent().css('border','');
+            $('#id_region2').val($(this).find('span').text());
+        });
+
+        $.each(['#add_new_phone1','#add_new_phone2'],function(i,v){
+            $(v).on('click',function(){
+                var x = i + 2;
+                $('#add_card_phones' + x).toggle();
+                if ($(v).text() == " + "){
+                    $(v).text(' - ');
+                }else{
+                    $(v).text(' + ');
+                }
+            });
+        });
+
+        {% if is_agency and user_profile.contacts|is_positive %}
+            $('#id_contact_name').hide();
+            $('#AgencyContact_0_id').on('change',function(){
+                $('#id_contact_name').val( $(this).find('span').text() );
+                ajaxGet('get_contact_phone', {'fullname': $(this).find('span').text() }, function (data){
+                    if ( data != "not found"){
+                        $('#id_phones').click();
+                        $('#id_phones').val(data);
+                    }
+                });
+            });
+        {% endif %}
+
+        {% if editform %}
+            if ( String("{{ad.action_type}}").indexOf('rent') > -1 ) { 
+                $('#action_type_0_rent').click(); 
+            }
+            if ( String("{{ad.action_type}}").indexOf('sale') > -1 ) { 
+                $('#action_type_0_sale').click(); 
+            }
+            if ( String("{{ad.period}}").indexOf('month') > -1 ) { 
+                $('#month').find('.checkbox').attr('checked','checked'); 
+            }
+            if ( String("{{ad.period}}").indexOf('day') > -1 ) { 
+                $('#day').find('.checkbox').attr('checked','checked'); 
+            }
+            // $("#id_action_type").val("{{ad.action_type}}");
+            $('#id_cat_tab_0 li[data-value="{{ad.cat_tab}}"]').click();
+            $('#id_cat_type_0 li[data-value="{{ad.cat_type}}"]').click();
+
+            $.each($('#photo-block > img'), function(index,element){
+                stored_imgs.push($(element).attr('name'));
+            });
+            $('#region__0_id').find('span').text($('#id_region__1').val());
+
+            $( window ).load(function() {
+                $('#id_cat_type_0 li[data-value="{{ad.cat_type}}"]').click();
+            });
+
+            $('#id_contact_name').val('{{ad.contact_name}}');
+
+            {% if is_agency %}
+                $('#id_AgencyContact_0').find('ul').find('[data-value="{{ad.contact_name}}"]').click()
+            {% else %}
+                {%for phone in ad.phones%}
+                    {% if forloop.counter == 1 %}
+                        $('#id_phones').val('{{phone}}');
+                    {% else %}
+                        $('#id_phones{{forloop.counter}}').val('{{phone}}');
+                    {% endif %}
+                {%endfor%}
+            {% endif %}
+
+            load_regions = true;
+            load_regions2 = true;
+            $('#region_0_id').click();
+            $('#id_region_0').find('li:contains("{{ad.region}}")').click();
+            $('#id_region_0').find('li:contains("{{ad.region}}")').css('background','#444');
+            $('#id_region_0').find('li:contains("{{ad.region}}")').css('color','white');
+
+        {% else %}
+            // Default values:
+            $("#action_type_0_sale").click();
+            $('#id_cat_tab_0 li.option').first().click();
+            {% if user_profile.fullname %}
+                $('#id_contact_name').val('{{user_profile.fullname}}');
+                {% else %}
+                $('#id_contact_name').val('{{user_profile.username}}');
+            {% endif %}
+            {%for phone in user_profile.phones %}
+                {% if forloop.counter == 1 %}
+                    $('#id_phones').val('{{phone}}');
+                {% else %}
+                    $('#id_phones{{forloop.counter}}').val('{{phone}}');
+                {% endif %}
+            {%endfor%}
+
+
+        {% endif %}  
+        $('[name="region__0"]').find('span').text('Район');
+
+        if ($('#id_phones2').val() != ''){ $('#add_new_phone1').click(); }
+        if ($('#id_phones3').val() != ''){ $('#add_new_phone2').click(); }
+
+    });
+
+    function check_empty(element){
+        var empty = false;
+        if ( $(element).val() == null || $(element).val() == "") {
+            empty = true;
+        }
+        return empty;
+    }
+
+    function check_email(element) {
+        var emailbad = false;
+        var x = $(element).val();
+        var atpos = x.indexOf("@");
+        var dotpos = x.lastIndexOf(".");
+        if (atpos< 1 || dotpos<atpos+2 || dotpos+2>=x.length) {
+            emailbad = true;
+        }
+        return emailbad;
+    }
+
+    // function check_sale(){
+    //     if(String($('#action_type_switcher').find('input').val()).indexOf("sale")>-1 && $('#id_cat_tab_1').val() == "flat"){
+    //         $($('#id_cat_type_0 li.option')[1]).hide();
+    //     }else{
+    //         $($('#id_cat_type_0 li.option')[1]).show();
+    //     }
+    // }
+
+    function default_cat_type(){
+        $('#id_total_area').attr('placeholder','Общая площадь');
+        if( $('#id_cat_tab_0').find(".select").data("selected") == 'area' ){
+            $('#id_total_area').attr('placeholder','Площадь участка');
+            $('#id_cat_type_1').parent().find('input').val("area");
+            $($('#id_cat_type_1').parent().find('span')[1]).text("Участок");
+        }else if( $('#id_cat_tab_0').find(".select").data("selected") == 'house' ){
+            $('#id_cat_type_1').parent().find('input').val("house");
+            $($('#id_cat_type_1').parent().find('span')[1]).text("Дом");
+        }else if ( $('#id_cat_tab_0').find(".select").data("selected") == 'flat' ){
+            $('#id_cat_type_1').parent().find('input').val("flat");
+            $($('#id_cat_type_1').parent().find('span')[1]).text("Квартира");
+        }else if ( $('#id_cat_tab_0').find(".select").data("selected") == 'liv_misc' ){
+            $('#id_cat_type_1').parent().find('input').val("other_liv_misc");
+            $($('#id_cat_type_1').parent().find('span')[1]).text("Другое");
+        }
+    }
+
+    function hide_elements(list) {
+        $.each(list, function( index, value ) {
+            $('#add_card_' + value).hide();
+            $('#add_card_' + value).find('input').removeAttr('required');
+        });
+    }
+
+    function show_elements(list) {
+        $.each(list, function( index, value ) {
+            $('#add_card_' + value).show();
+            // if ( !($('#add_card_' + value).find('input').parent().hasClass('checkbox')) ){ 
+            //     $('#add_card_' + value).find('input').attr('required','true');
+            // }
+        });
+        $.each(['region',
+                'address',
+                'price',
+                'currency',
+                // 'title',
+                'description',
+                'contact_name',
+                'phones',], function( index, value ) {
+                $('#add_card_' + value).find('input').attr('required','true');
+                $('#add_card_' + value).show();
+        });
+        // $('#id_agreement').attr('required','true');
+        $('#abc').removeAttr('required');
+        $('#id_description').attr('required','true');
+    }
+
+    function required(list) {
+        $.each(list, function( index, value ) {
+            $('#add_card_' + value).find('input').attr('required','true');
+        });
+    }
+
+    function hide_all(){
+        $.each(['span','div'], function( index, value1 ) {
+            $.each($(value1), function( index, value2 ) {
+                if (String($(value2).attr('id')).substring(0,9) == "add_card_"){ 
+                    $(value2).find('input').removeAttr('required');
+                    $(value2).hide();
+                }
+            });
+            $('#add_card_region_').show();
+        });
+    }
+
+    function change_form(){
+        var my_action_type = $('#action_type_switcher').find('input').val();
+        var my_cat_tab = $('#id_cat_tab_0 > ul > li:contains("' + $('#cat_tab_0_id > span').text() + '")').data("value");
+        var my_cat_type = $('#id_cat_type_1').val();
+        hide_all();
+        
+        if ( $('#id_group_1').val() == 'living' ){
+
+            if ( my_action_type.indexOf("sale") > -1 ) {
+            
+                        if ( my_cat_tab == "flat" ) {
+                            if ( my_cat_type == "room" ) {
+
+                                    show_elements([
+                                        'region',
+                                        'address',
+                                        'house',
+                                        'price',
+                                        'currency',
+                                        'number_of_rooms',
+                                        'floor',
+                                        'number_of_floors',
+                                        'period',
+                                        // 'type_of_house',
+                                        'security',
+                                        'prepayment',
+                                        // 'prescribed_persons',
+                                        'neighbors_in_the_apartment',
+                                        'for_students',
+                                        // 'agency',
+                                        'double_glazed_windows',
+                                        'rent',
+                                        'room_area',
+                                        'year_built',
+                                        'wall_material',
+                                        'finish',
+                                        'wc',
+                                        'balcony_deck',
+                                        'repair',
+                                        'auction',
+                                        'furniture',
+                                        'home_appliances',
+                                        'internet',
+                                        'city_phone',
+                                        'lift',
+                                        'flooring',
+                                        // 'title',
+                                        'description',
+                                        'photo',
+                                        'pets',
+                                        'kids',
+                                        'phones',]);
+                                    
+                                    required([
+                                        'flooring',
+                                        'house',
+                                        ]);
+
+                                }else{
+                                    show_elements([
+                                        'region',
+                                        'address',
+                                        'house',
+                                        'price',
+                                        'currency',
+                                        'number_of_rooms',
+                                        'floor',
+                                        'number_of_floors',
+                                        // 'type_of_house',
+                                        // 'ownership',
+                                        // 'agency',
+                                        'double_glazed_windows',
+                                        'total_area',
+                                        'living_area',
+                                        'kitchen_area',
+                                        'year_built',
+                                        'wall_material',
+                                        'wc',
+                                        'security',
+                                        'percentage_of_readiness',
+                                        'balcony_deck',
+                                        'repair',
+                                        // 'prescribed_persons',
+                                        'auction',
+                                        'furniture',
+                                        'home_appliances',
+                                        'internet',
+                                        'city_phone',
+                                        'lift',
+                                        'flooring',
+                                        // 'title',
+                                        'description',
+                                        'photo',
+                                        'phones',]);
+
+                                    required([
+                                        'wall_material',
+                                        // 'year_built',
+                                        'balcony_deck',
+                                        // 'flooring',
+                                        'house',
+                                    ]);
+
+                                }
+                        }else if ( my_cat_tab == "house" ){
+
+                            show_elements([
+                                'region',
+                                'address',
+                                'house',
+                                'price',
+                                'currency',
+                                'number_of_rooms',
+                                'number_of_floors',
+                                // 'type_of_house',
+                                'electricity',
+                                'wall_material',
+                                // 'agency',
+                                'double_glazed_windows',
+                                // 'area',
+                                // 'ownership',
+                                'gas',
+                                'finish',
+                                'security',
+                                'balcony_built',
+                                'water',
+                                'roof_material',
+                                // 'land_area',
+                                'fence',
+                                'column',
+                                'heating',
+                                'cellar',
+                                'garage',
+                                // 'parking_places',
+                                'km_from_city',
+                                'loft',
+                                'bathroom',
+                                'sewerage',
+                                'total_area',
+                                'living_area',
+                                'balcony_deck',
+                                'repair',
+                                'auction',
+                                'furniture',
+                                'home_appliances',
+                                'internet',
+                                'city_phone',
+                                'flooring',
+                                // 'title',
+                                'description',
+                                'photo',
+                                'phones',
+                                'plot_size_in_acros',]);
+                            
+                            required([
+                                // 'wall_material',
+                                'balcony_deck',
+                                // 'flooring',
+                                // 'parking_places',
+                                'house',
+                            ]);
+
+                        }else if ( my_cat_tab == "area" ){
+                        
+                            show_elements([
+                                'region',
+                                'address',
+                                'house',
+                                'price',
+                                'currency',
+                                // 'price_per_m2',
+                                // 'agency',
+                                'total_area',
+                                'wc',
+                                'gas',
+                                'security',
+                                'households_built',
+                                'water',
+                                'column',
+                                // 'ownership',
+                                'km_from_city',
+                                'sewerage',
+                                'light',
+                                'electricity',
+                                'fence',
+                                'auction',
+                                // 'title',
+                                'description',
+                                'photo',
+                                'phones',]);
+
+                            required([
+                                // 'wc',
+                                // 'households_built',
+                                'total_area'
+                            ]);
+                            
+                        }else if ( my_cat_tab == "liv_misc" ){
+
+                            show_elements([
+                                'region',
+                                'address',
+                                'house',
+                                'price',
+                                'currency',
+                                'photo',
+                                // 'title',
+                                'phones',
+                                'description',
+                                'auction',]);
+
+                        }else{
+                            hide_all();
+                        }
+
+
+            }else if ( my_action_type.indexOf("rent") > -1 ) {
+                            
+                            if ( my_cat_tab == "flat" ) {
+                                if ( my_cat_type == "room" ) {
+
+                                    show_elements([
+                                        'region',
+                                        'address',
+                                        'house',
+                                        'price',
+                                        'currency',
+                                        'number_of_rooms',
+                                        'floor',
+                                        'number_of_floors',
+                                        'period',
+                                        // 'type_of_house',
+                                        'security',
+                                        'prepayment',
+                                        // 'prescribed_persons',
+                                        'neighbors_in_the_apartment',
+                                        'for_students',
+                                        // 'agency',
+                                        'double_glazed_windows',
+                                        'rent',
+                                        'room_area',
+                                        'year_built',
+                                        'wall_material',
+                                        'finish',
+                                        'wc',
+                                        'balcony_deck',
+                                        'repair',
+                                        'auction',
+                                        'furniture',
+                                        'home_appliances',
+                                        'internet',
+                                        'city_phone',
+                                        'lift',
+                                        'flooring',
+                                        // 'title',
+                                        'description',
+                                        'photo',
+                                        'pets',
+                                        'kids',
+                                        'phones',]);
+            
+                                    required([
+                                        'flooring',
+                                        'house',
+                                        ]);
+
+                                }else{
+                                    show_elements([
+                                        'region',
+                                        'address',
+                                        'house',
+                                        'price',
+                                        'currency',
+                                        'number_of_rooms',
+                                        'floor',
+                                        'number_of_floors',
+                                        'period',
+                                        // 'type_of_house',
+                                        'security',
+                                        'prepayment',
+                                        // 'prescribed_persons',
+                                        'for_students',
+                                        // 'agency',
+                                        'double_glazed_windows',
+                                        'rent',
+                                        'total_area',
+                                        'living_area',
+                                        'year_built',
+                                        'wall_material',
+                                        'finish',
+                                        'wc',
+                                        'balcony_deck',
+                                        'repair',
+                                        'auction',
+                                        'furniture',
+                                        'home_appliances',
+                                        'internet',
+                                        'city_phone',
+                                        'lift',
+                                        'flooring',
+                                        // 'title',
+                                        'description',
+                                        'photo',
+                                        'pets',
+                                        'kids',
+                                        'phones',]);
+                                    
+                                    required([
+                                    'wall_material',
+                                    // 'year_built',
+                                    'balcony_deck',
+                                    // 'flooring',
+                                    'house',
+                                    ]);
+                                }
+
+
+                            }else if ( my_cat_tab == "liv_misc" ){
+
+                                    show_elements([
+                                        'region',
+                                        'address',
+                                        'house',
+                                        'price',
+                                        'currency',
+                                        'photo',
+                                        // 'title',
+                                        'description',
+                                        'auction',
+                                        'phones',]);
+
+                            }else if ( my_cat_tab == "house" ){
+
+                                show_elements([
+                                    'region',
+                                    'address',
+                                    'house',
+                                    'price',
+                                    'currency',
+                                    'number_of_rooms',
+                                    'period',
+                                    // 'type_of_house',
+                                    // 'prescribed_persons',
+                                    'for_students',
+                                    // 'agency',
+                                    'double_glazed_windows',
+                                    'rent',
+                                    // 'area',
+                                    'households_built',
+                                    'finish',
+                                    'prepayment',
+                                    'security',
+                                    // 'land_area',
+                                    'fence',
+                                    'column',
+                                    'heating',
+                                    'cellar',
+                                    'garage',
+                                    // 'parking_places',
+                                    'km_from_city',
+                                    'loft',
+                                    'bathroom',
+                                    'sewerage',
+                                    'total_area',
+                                    'living_area',
+                                    'balcony_deck',
+                                    'repair',
+                                    'auction',
+                                    'furniture',
+                                    'home_appliances',
+                                    'internet',
+                                    'city_phone',
+                                    'flooring',
+                                    // 'title',
+                                    'description',
+                                    'photo',
+                                    'pets',
+                                    'kids',
+                                    'phones',
+                                    'plot_size_in_acros',]);
+
+                                required([
+                                    // 'wall_material',
+                                    'balcony_deck',
+                                    // 'flooring',
+                                    'heating',
+                                    // 'parking_places',
+                                    'house',
+                                ]);
+
+                            }else if ( my_cat_tab == "area" ){
+
+                                show_elements([
+                                    'region',
+                                    'address',
+                                    'price',
+                                    'currency',
+                                    // 'price_per_m2',
+                                    'period',
+                                    // 'agency',
+                                    'rent',
+                                    'total_area',
+                                    'households_built',
+                                    'wc',
+                                    'security',
+                                    'prepayment',
+                                    'water',
+                                    'column',
+                                    'km_from_city',
+                                    'sewerage',
+                                    'light',
+                                    'fence',
+                                    'auction',
+                                    // 'title',
+                                    'description',
+                                    'photo',
+                                    'phones',]);
+
+                                required([
+                                    'wc',
+                                    'households_built',
+                                ]);
+                            }
+            }
+        }else if ( $('#id_group_1').val() == 'commercial' ){
+            show_elements([
+                'region',
+                'address',
+                'house',
+                'price',
+                'currency',
+                'period',
+                'auction',
+                // 'title',
+                'description',
+                'photo',
+                'phones',]);
+
+            if ( my_cat_tab == "land" ){
+                show_elements(['total_area']);
+                $('#id_total_area').attr('placeholder','Площадь участка');
+            }
+        }
+        $('#autocomplete').removeAttr('required');
+        $('#id_region___1').removeAttr('required');
+        $('#id_region__1').removeAttr('required');
+    }
+</script>
+    <div id="add-content">
+        <div id="adress">
+            <span><a href="">Главная</a></span>
+            <img src="/static/images/adress_arrow.png">
+            <span class="after">Добавить объявление</span>
+        </div>
+        <div id="add-inner-wrap">
+        <!--
+            <ol>
+            {% if form.errors %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    {% if field.errors %}
+                            <li>{{ field.label }} - <strong>{{ field.errors }}</strong></li>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            </ol>
+        -->
+        <form id="add_card_form" method="POST" enctype="multipart/form-data" action="/add-card" validate>
+            <div id="add-inner">
+                <div>
+                    <h1>Добавить объявление</h1>
+                    <div id="top-add-poster" style="display: flex; flex-wrap: wrap; justify-content: space-between">
+                        <div id="living-commercial" class="switcher">
+                            {{ form.group }}
+                        </div>               
+
+                        <div>
+                            <span>Категория</span>
+                            {{ form.cat_tab }}
+                        </div>                       
+
+                        <div>
+                            <span>Тип</span>
+                            {{ form.cat_type }}
+                        </div>
+               
+                        <div class="switcher_add_card" id="action_type_switcher" name="action_type">
+                            <div class="active" id="action_type_0_sale" data-type="action_type_0" data-value="sale">Продажа</div>
+                            <div class="active" id="action_type_0_rent" data-type="action_type_0" data-value="rent">Аренда</div>
+                            {{ form.action_type }}
+                        </div>
+
+                        <div>
+                        <span name="search2_1" style="display:none;" id="search2_1_sale">
+                            {{ form.exchange }}
+                        </span>
+                        <span name="search2_1" style="display:none;" id="search2_1_rent"> 
+                            <span id="month">{{ form.month }}</span>
+                            <span id="day">{{ form.day }}</span>
+                        </span>
+                        </div>
+
+                        <div></div>
+                    </div>
+
+
+        <div id="myform">
+                            <!-- <div id="add_card_exchange_description" align="center">{{form.exchange_description}}</div> -->
+
+                    <div id="add-main">
+                        <div id="add_card_photo">
+                            <div id="sidebar-photo">
+                                <label>
+                                    <input type="file" multiple id="abc" name="FAKE_PATH" accept="image/*">
+                                    <div id="add-photo">ДОБАВИТЬ ФОТОГРАФИЮ</div>
+                                </label>
+
+                                    <div id="photo-block" class="flex-align">
+                                    {% if ad.images_len > 0 %}
+                                        {% for img_src in ad.images.thumbs|slice:":20" %}
+                                            <img 
+                                            {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}" {% else %} src="{{ img_src }}" {% endif %} 
+                                            name="{{ img_src|get_photo_name}}">
+                                        {% endfor %}
+                                        {% for i in 20|subtract2:ad.images.thumbs|get_range %}
+                                            <!--<img src="/static/images/mini_pic.png"> #}-->
+                                            <div class="noPhoto"></div>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for i in 20|get_range %}
+                                            <!--<img src="/static/images/mini_pic.png"> #}-->
+                                            <div class="noPhoto"></div>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </div>
+                            <div class="note">Максимальное количество 20 фотографий. Размер до 1Мб в формате JPG или PNG.</div>
+                        </div>
+
+                        </div>
+                        <div id="add-main-text">
+                            <!--<input placeholder="Заголовок объявления">-->
+                            <!--<div class="note">Если поле не будет заполнено, заголовок сформируется автоматически...</div>-->
+                            <!--<textarea placeholder="Текст объявления"></textarea>-->
+                            <!--<span id="add_card_title">{{ form.title }}</span>-->
+                            <span id="add_card_description">{{ form.description }}</span>
+                            <div class="note">Вы можете указать любую информацию, которой нет выше. Указывать контактную иноформацию запрещено, используйте соответствующий блок ниже.</div><br>
+                            <div id="add_card_contact_name">
+
+                            {% if is_agency and user_profile.contacts|is_positive %}
+                                <div class="select-wrap" id="id_AgencyContact_0" name="AgencyContact_0" style="width: 200px; height: 34px"><div class="select" id="AgencyContact_0_id" data-type="AgencyContact_0"><span>Список контактов</span></div>
+                                    <ul>
+                                    {% for contact in user_profile.contacts %}
+                                        <li class="option" data-value="{{contact.fullname}}">{{contact.fullname}}</li>
+                                    {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                                {{ form.contact_name }}
+                            </div>
+
+
+
+
+
+                            <div>
+                            <span id="add_card_phones">{{ form.phones }}<span id='add_new_phone1' style="cursor:pointer;"> + </span></span>
+                            <span id="add_card_phones2">{{ form.phones2 }}<span id='add_new_phone2' style="cursor:pointer;"> + </span></span>
+                            <span id="add_card_phones3">{{ form.phones3 }}</span>
+                            </div>
+                        </div>
+
+                        <div style="clear: both"></div>
+                    </div>
+                    <div id="adress-realty">
+                        <h1>Адрес недвижимости</h1>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between">
+                                <div id="add_card_region">{# {{ form.region }} #}
+
+<div class="select-wrap2" id="id_region_0" name="region_0">
+<div class="select" id="region_0_id" data-type="region_0">
+<span>Выбор региона, города</span></div>
+<ul>
+<input id="autocomplete" type="text" name="search">
+<li class="option" data-value="Брест">г. Брест</li>
+<li class="option" data-value="Брестская область">Брестская Область</li>
+<li class="option" data-value="Витебск">г. Витебск</li>
+<li class="option" data-value="Витебская область">Витебская Область</li>
+<li class="option" data-value="Гомель">г. Гомель</li>
+<li class="option" data-value="Гомельская область">Гомельская Область</li>
+<li class="option" data-value="Гродно">г. Гродно</li>
+<li class="option" data-value="Гродненская область">Гродненская Область</li>
+<li class="option" data-value="Минск">г. Минск</li>
+<li class="option" data-value="Минская область">Минская Область</li>
+<li class="option" data-value="Могилев">г. Могилев</li>
+<li class="option" data-value="Могилевская область">Могилевская Область</li>
+</ul>
+<input id="id_region_1" name="region_1" type="hidden" required="required">
+</div>
+<div id="add_card_region_" style="height: 0px;width: 0px;">{{ form.region_ }}</div>
+<div id="add_card_region__" style="height: 0px;width: 0px;">{{ form.region__ }}</div>
+
+
+                                </div>
+                                <!-- <div id="add_card_region_">{{ form.region_ }}</div> -->
+                                <div id="add_card_region2">{{ form.region2 }}</div>
+                                <!-- <div id="add_card_location">{{ form.location}}</div> -->
+                                {# <div id="add_card_microregion">{{ form.microregion }}</div> #}
+                                {# <div id="add_card_city">{{ form.city }}</div> #}
+                                <div id="add_card_address">{{ form.address }}</div>
+                                <div id="add_card_house">{{ form.house }}</div>
+                                <div style="width:354px"></div>
+                        </div>
+                    </div>
+                    <div id="add-main-info">
+                        <h1>Основная информация</h1>
+                        <div>
+                            <div>
+                                <div style="margin-bottom: 20px">
+                                    <span id="add_card_price">{{ form.price}}</span>               
+                                    <span id="add_card_currency">{{ form.currency }}</span>
+                                </div>
+                                <div id="add_card_floor">{{ form.floor }}</div>                      
+                                <div id="add_card_total_area">{{ form.total_area }}</div>                                 
+                                <div id="add_card_plot_size_in_acros">{{ form.plot_size_in_acros }}</div>
+                                <div id="add_card_wall_material">{{ form.wall_material }}</div>
+                                <div id="add_card_repair">{{ form.repair }}</div>                          
+                                <div id="add_card_area">{{ form.area }}</div>
+                                <!-- <div id="add_card_land_area">{{ form.land_area }}</div> -->
+
+                            </div>
+                            <div>
+                                <div class="checkbox-align">
+                                    <span id="add_card_auction">{{ form.auction }}</span>
+                                </div>
+                                <div style="margin-bottom: 20px; line-height: 34px;">
+                                    <span id="add_card_number_of_rooms"><span>Кол-во комнат</span>{{ form.number_of_rooms }}</span>
+                                </div>
+                                <div id="add_card_number_of_floors">{{ form.number_of_floors }}</div>
+                                <div id="add_card_living_area">{{ form.living_area }}</div>
+                                <div id="add_card_wc">{{ form.wc }}</div>
+                                <div id="add_card_households_built">{{ form.households_built }}</div>
+                                <!--<div id="add_card_prescribed_persons">{{ form.prescribed_persons }}</div>-->
+
+                            </div>
+                            <div>
+                                <div id="add_card_year_built">{{ form.year_built }}</div>
+                                <div id="add_card_kitchen_area">{{ form.kitchen_area }}</div>
+                                <div id="add_card_balcony_deck">{{ form.balcony_deck }}</div>
+                                <div id="add_card_flooring">{{ form.flooring }}</div>
+                                <div id="add_card_heating">{{ form.heating }}</div>
+                                <!--<div id="add_card_type_of_house">{{ form.type_of_house }}</div>-->
+                                <!--<div id="add_card_price_per_m2">{{ form.price_per_m2 }}</div>-->
+                                <div id="add_card_prepayment">{{ form.prepayment }}</div>
+                                <div id="add_card_km_from_city">{{ form.km_from_city }}</div>
+                                <div id="add_card_neighbors_in_the_apartment">{{ form.neighbors_in_the_apartment }}</div>
+                                <div id="add_card_percentage_of_readiness">{{ form.percentage_of_readiness }}</div>
+                                <div id="add_card_parking_places">{{ form.parking_places }}</div>                         
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <div id="add_card_electricity">{{ form.electricity }}</div>
+                                <div id="add_card_gas">{{ form.gas }}</div>
+                                <div id="add_card_sewerage">{{ form.sewerage }}</div>
+                                <div id="add_card_bathroom">{{ form.bathroom }}</div>
+                                <div id="add_card_furniture">{{ form.furniture }}</div>
+                                <div id="add_card_internet">{{ form.internet }}</div>
+                                <!--<div id="add_card_agency">{{ form.agency }}</div>-->
+                                <div id="add_card_rent">{{ form.rent }}</div>
+                            </div>
+                            <div>
+                                <div id="add_card_security">{{ form.security }}</div>
+                                <div id="add_card_fence">{{ form.fence }}</div>
+                                <div id="add_card_garage">{{ form.garage }}</div>
+                                <div id="add_card_city_phone">{{ form.city_phone }}</div>
+                                <div id="add_card_home_appliances">{{ form.home_appliances }}</div>
+                                <div id="add_card_lift">{{ form.lift }}</div>
+                                <div id="add_card_kids">{{ form.kids }}</div>
+                                <div id="add_card_pets">{{ form.pets }}</div>
+                                <div id="add_card_for_students">{{ form.for_students }}</div>
+                            </div>
+                            <div>
+                                <div id="add_card_finish">{{ form.finish }}</div>
+                                <div id="add_card_double_glazed_windows">{{ form.double_glazed_windows }}</div>
+                                <div id="add_card_cellar">{{ form.cellar }}</div>
+                                <div id="add_card_loft">{{ form.loft }}</div>
+                                <div id="add_card_balcony_built">{{ form.balcony_built }}</div>
+                                <div id="add_card_column">{{ form.column }}</div>
+                                <div id="add_card_light">{{ form.light }}</div>
+                                <!--<div id="add_card_ownership">{{ form.ownership }}</div>-->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="add-contact">
+
+            {% if user.is_authenticated == False %}
+            <!--{% if user_error %}
+                <div align="center"> {{ user_error }} </div>
+            {% endif %}-->
+                <div id='user_not_logged' style="margin-bottom: 20px;">
+                    <div>
+                        <img src="/static/images/alert.png" style="vertical-align: middle;"> Вы вошли как незарегистрированный пользователь.
+                    </div>
+                    <div>
+                        <div>
+                            <label style="cursor:pointer"><div class="checkbox" style="margin-left: 15px" id="account_login"><input type="checkbox"></div>У меня уже есть аккаунт.</label>
+                            <label style="cursor:pointer"><div class="checkbox" style="margin-left: 45px" id="account_register"><input type="checkbox"></div>У меня нет аккаунта.</label>
+                        </div>
+                    </div>
+                </div>
+<!--
+            <div id='popup_login'>
+            <div style="cursor:pointer;margin-right:10px" align="right" class="close_popup">x</div>
+                                        <div id="add-contact" style="text-align:center"><h3>Авторизация</h3>
+                                            <br>
+                                            <div class="contacts" style="margin-bottom: 20px">   
+                                                <input id="id_usernameL" maxlength="30" name="usernameL" placeholder="Имя пользователя или E-mail">
+                                            </div>
+                                            <div class="contacts">
+                                                <input id="id_passwordL" maxlength="128" name="passwordL" placeholder="Пароль" type="password">
+                                            </div>
+                                            <input type="hidden" id="id_emailL" maxlength="30" name="emailL" placeholder="E-mail" type="email" value="fake@none.com">   
+                                        <button type='button' class='login_or_register' id='login' style="cursor:pointer;">Авторизация</button>
+                                        </div>
+            </div>
+
+            <div id='popup_register'>
+            <div style="cursor:pointer;margin-right:10px" align="right" class="close_popup">x</div>
+                                        <div id="add-contact" style="text-align:center"><h3>Регистрация</h3>
+                                                <br>      
+                                                <div class="contacts" style="margin-bottom: 20px">   
+                                                <input id="id_usernameR" maxlength="30" name="usernameR" placeholder="Имя пользователя" type="text">
+                                                </div>
+
+                                                <div class="contacts" style="margin-bottom: 20px">                        
+                                                    <input id="id_emailR" maxlength="30" name="emailR" placeholder="E-mail" type="email">
+                                                </div>
+
+                                                <div class="contacts">
+                                                    <input id="id_passwordR" maxlength="128" name="passwordR" placeholder="Пароль" type="password">
+                                                </div>
+                                        <button type='button' class='login_or_register' id='register' style="cursor:pointer;">Регистрация</button>
+                                        </div>
+            </div> -->
+            {% endif %}
+
+                    <!--
+                        <div>
+                            {% if form.captcha.errors %}
+                                <span>!</span>
+                            {% endif %}                            
+                            {{ form.captcha }}
+                        </div>
+                    -->
+                    <div style="margin-top:50px">
+                        {{ form.agreement }}<a href="">условиями и правилами</a><br>
+                        <input type="hidden" name="username" value="{{ user.username }}">
+                        {% if editform %}<input type="text" name="ObjectId" value="{{ ad.id }}" hidden>{% endif %}
+                    </div>
+                        <button type="submit" id="sendForm" {% if editform %} name="_edit" {% else %} name="_addCard" {% endif %} disabled="disabled" class="grayscale">
+                        Далее
+                        </button>
+                        <!--{% if user.is_authenticated == False %}disabled{% endif %}-->
+                    </div>
+                </div>
+            </div>
+    </div>
+        {% csrf_token %}
+        </form>
+
+        </div>
+
+
+
+
+<div id='screen'>
+</div>
+<div id='popup_loading' align="center" style='
+    display:none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);'>
+<img src='/static/images/loading-animation-3.gif'/>
+<div id='img_uploading_progress' align="center"></div>
+</div>
+<!-- <div class='popup_message' style='display:none;'>
+<div style="cursor:pointer;margin-right:10px" align="right" class="close_popup">x</div>
+<br><br><br><br><br>
+Общий размер изображения больше 200МБ
+</div> -->
+
+    </div>
+    
+    <script type="text/javascript">
+    $(function (){
+        $("input[mask]").each(function (i, el){
+            $(this).mask($(this).attr("mask"));
+        });
+    });
+    </script>
+{% endblock body_content %}

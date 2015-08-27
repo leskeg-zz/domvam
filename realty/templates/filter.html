@@ -1,0 +1,328 @@
+{% load common_tags %}
+{% load filters %}
+<div id="realty-calc">
+    <div id="calc-tabs">
+    
+        {% for tab, tab_label in filter_obj.fields.cat_tab.choices %}
+            <div name="filter_living" {% filter_link get_params "cat_tab" tab css_class="calc-tab" %} >{{ tab_label }}</div>
+        {% endfor %}
+
+        {% for tab, tab_label in cat_tabs_commercial %}
+            <div style="display:none" name="filter_commercial" {% filter_link get_params "cat_tab" tab css_class="calc-tab" %} >{{ tab_label }}</div>
+        {% endfor %}
+
+    </div>
+    <div id="filter-square">
+
+        <div id="search" class="flex-align">
+            <div id="filter_region">
+                {{ filter_obj.region }}
+                <div class="remove_region" style="display: none;cursor:pointer;">x</div>
+            </div>
+
+            <div id="filter_region2">
+                {{ filter_obj.region2 }}
+                <div class="remove_region2" style="display: none;cursor:pointer;">x</div>
+            </div>
+
+            {# <input id="autocomplete" type="text" placeholder="Region name" name="search"> #}
+            {# {{ filter_obj.title }} #}
+
+            <div name="cat_type_filter" style="display:block">
+                {{ filter_obj.cat_type }}
+            </div>
+
+            <div class="range-filter" name="price" style="display:none">
+                <span>
+                <span>Цена от </span>
+                {{ filter_obj.price_min }}
+                <span> до </span>
+                {{ filter_obj.price_max }}
+                {{ filter_obj.currency }}
+                </span>
+            </div>
+
+            <!--<div class="select-wrap" id="id_cat_type" name="type_of_building" style="display:none">
+                <div class="select" id="cat_type_0_id" name="type_of_building_filter" data-type="cat_type">
+                    <span>Тип строения</span>
+                </div>
+                    <ul class="">
+                    <li data-value="garage" class="option">Гараж</li>
+                    <li data-value="parking_lot" class="option">Машино место</li>
+                    <li data-value="other_liv_misc" class="option">Другое</li>
+                    </ul>
+            </div>-->
+
+                <button id='boton_magico' name="search-buttons" class="filter_submit_button" style="background: url('/static/images/apartment_icon.png') 20px 7px no-repeat, #ff5442;display:block">Найти квартиру</button>
+                <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/house_icon.png') 20px 7px no-repeat, #ff5442;display:none">Найти дом</button>
+                <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/area_icon.png') 20px 7px no-repeat, #ff5442;display:none"><span style="padding-left:10px">Найти  участок</span></button>
+                <button name="search-buttons" class="filter_submit_button" style="background: url('/static/images/Other_icon.png') 20px 7px no-repeat, #ff5442;display:none"><span style="padding-left:10px">Найти помещение</span></button>
+
+
+        </div>
+        <div name="with_photo" align="right" class="with_photo" style="margin:2px 164px 5px 0px">{{ filter_obj.with_photo }}</div>
+
+        <div id="search2" class="flex-align" style="margin-top:0;padding-bottom:0;display:inlie-flex">
+            <div id="sell-rent" name="sell_rent_filter" class="switcher">
+                {{ filter_obj.action_type }}
+            </div>
+            <div class="rooms-filter" style="display:block" name="number_of_rooms">
+                <span>Кол-во комнат:</span>
+                <span style="float: right;">{{filter_obj.number_of_rooms}}</span>
+            </div>
+
+            <div class="range-filter" name="total_area" style="display:none;width:300px">
+                <span style="float:right" >
+                <span>Участок от</span>
+                {{ filter_obj.total_area_min }}
+                <span> до </span>
+                {{ filter_obj.total_area_max }}
+                <span> сот.</span>
+                </span>
+            </div>
+
+
+            <div class="range-filter" name="living_area" style="display:none">
+                <span style="float:right">
+                <span>Площадь от</span>
+                {{ filter_obj.total_area_min }}
+                <span> до </span>
+                {{ filter_obj.total_area_max }}
+                <span> м<sup>2</sup></span>
+                </span>
+            </div>
+
+            <div align="center" class="range-filter" style="display:none" name="plot_size_in_acros">
+                <span style="float:right">
+                <span>Участок от</span>
+                {{ filter_obj.plot_size_in_acros_min }}
+                <span> до </span>
+                {{ filter_obj.plot_size_in_acros_max }}
+                <span> сот.</span>
+                </span>
+            </div>
+
+
+            <div class="range-filter" name="price2" style="display:block">
+                <span>
+                <span>Цена от </span>
+                {{ filter_obj.price_min }}
+                <span> до </span>
+                {{ filter_obj.price_max }}
+                {{ filter_obj.currency }}
+
+
+                </span>
+            </div>
+            <div name="empty" style="width:300px;display:none"></div>
+
+            <div class="range-filter" name="price3" style="display:none">
+                <span>
+                <span>Цена от </span>
+                {{ filter_obj.price_min }}
+                <span> до </span>
+                {{ filter_obj.price_max }}
+                {{ filter_obj.currency }}
+
+                </span>
+            </div>
+
+            <div id="another" name='another'>
+                <span onclick="showFullCalc()" style="color:white">.</span> <!--Расширенный поиск-->
+            </div>
+
+        </div>
+
+        <div id="search2_1" name="search2_1" style="display:block;margin-left:30px" class="period_exchange">
+            <div name="search2_1_sale" style="display:block;" id="search2_1_sale">
+                <span class="exchange">{{ filter_obj.exchange }}</span>
+            </div>
+            <div name="search2_1_rent" style="display:none;" id="search2_1_rent"> 
+                <span class="month">{{ filter_obj.month }}</span>
+                <span class="day">{{ filter_obj.day }}</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+$(function (){
+    window.alert = null; // disable alerts
+
+    $('[name="currency_0"]').on('change',function(){
+        _obj['currency']=$(this).find('span').text().toLowerCase();
+    });
+
+    $(document).keydown(function (e){
+        // if(e.keyCode == 13){
+        //     $(document.getElementsByName("search-buttons")[0]).trigger("click");
+        // }
+    {% if change_tab_cat_type %}
+        $('div[data-value="{{change_tab_cat_type}}"]').first().click();
+    {% endif %}
+    }); 
+
+    // $("div#realty-calc #cat_type_id").children().text("Квартира");
+    // $("div#side-filter #cat_type_id").children().text("Квартира");
+
+    if ($("div#realty-calc #region_0_id").children().text() == ""){
+        $("div#realty-calc #region_0_id").children().text("Выбор региона, города"); 
+    }
+
+    if ($("div#side-filter #region_0_id").children().text() == ""){
+        $("div#side-filter #region_0_id").children().text("Выбор региона, города"); 
+    }
+    $('[name="region2_0"]').find('span').text('Район');
+
+    $("div#realty-calc #action_type_0_sale").trigger("click");
+    $("div#side-filter #action_type_0_sale").trigger("click");
+
+
+    var only_once = true;
+    $('#realty-type').on('click',function(){
+        var type = $(this).find(".active").data('value');
+        if (type == 'commercial'){
+            show_hide_array(['filter_living'], "hide");
+            show_hide_array(['filter_commercial'], "show");
+
+            $('[name="filter_commercial"]').first().click();
+            _obj['cat_tab'] = 'building';
+
+            {% if change_tab_cat_type %}
+            if (only_once){
+                $('div[data-value="{{change_tab_cat_type}}"]').first().click();
+                _obj['cat_tab'] = '{{change_tab_cat_type}}';
+                only_once = false;
+            }            
+            {% endif %}
+            filter_submit_button(_obj);
+
+            history.pushState(null, null, "/-" + type + '-' + _obj['cat_tab'] );
+        }else if (type == 'living'){
+            show_hide_array(['filter_commercial'], "hide");
+            show_hide_array(['filter_living'], "show");
+            $('[name="filter_living"]').first().click();
+            _obj['cat_tab'] = 'flat';
+        }
+        if (location.pathname == '/') {
+            _obj['group'] = type;
+            filter_submit_button(_obj);
+        }
+
+        if (location.pathname.indexOf('commercial') > -1) {
+            _obj['group'] = type;
+            filter_submit_button(_obj);
+            history.pushState(null, null, "/-" + type + '-' + _obj['cat_tab'] );
+            // window.location.href = "/-" + type + '-' + _obj['cat_tab']
+        }
+
+        $('html,body').animate({scrollTop: $("#realty-calc").offset().top},'slow');
+
+    });
+
+    $('[name="filter_commercial"]').on('click',function(e){
+        e.preventDefault();
+        $('[name="cat_type"] li').remove();
+        // $('[name="cat_type"] span').text('Тип строения');
+        ajaxGet('ajax/get_cat_type_commercial', {'cat_tab': $(this).data('value') }, function (data){
+            // $("#id_cat_tab_0").find("ul").empty();
+
+            $.each(data, function (i, el){
+                $("#realty-calc #id_cat_type").find("ul").append(
+                    $("<li/>", {
+                        text: el[1], 
+                        "data-value": el[0], 
+                        class: "option"
+                        }
+                    )
+                );
+                $("#side-filter #id_cat_type").find("ul").append(
+                    $("<li/>", {
+                        text: el[1], 
+                        "data-value": el[0], 
+                        class: "option"
+                        }
+                    )
+                );
+            });
+            $('#id_cat_type').find('ul').children().first().click();            
+        });
+    });
+
+    $('[name="filter_living"]').on('click',function(e){
+        e.preventDefault();
+        $('[name="cat_type"] li').remove();
+        // $('[name="cat_type"] span').text('Тип строения');
+
+        ajaxPost('ajax/add/get_cat_types', {'cat_tab_0': $(this).data('value'), 'group_0': "living"}, function (data){
+            // $("#id_cat_tab_0").find("ul").empty();
+
+            $.each(data, function (i, el){
+                $("#realty-calc #id_cat_type").find("ul").append(
+                    $("<li/>", {
+                        text: el[1], 
+                        "data-value": el[0], 
+                        class: "option"
+                        }
+                    )
+                );
+                $("#side-filter #id_cat_type").find("ul").append(
+                    $("<li/>", {
+                        text: el[1], 
+                        "data-value": el[0], 
+                        class: "option"
+                        }
+                    )
+                );
+            });
+            $('[name="cat_type"] span').text('Тип строения');
+            $('#id_cat_type').find('ul').find('li:contains("Квартира")').click();
+            $('#id_cat_type').find('ul').find('li:contains("Дом")').click();
+            $('#id_cat_type').find('ul').find('li:contains("Гараж")').click();
+        });
+    });
+
+    $.each(['[data-type="cat_tab"]','#filter-square .switcher','#side-filter .switcher'], function(index,value){
+        $(value).on('click', function (e){
+            e.preventDefault();
+            ajaxGet('ajax/ajax_get_region_counters', _obj, function (data){
+                parenthesis(data);
+            });
+        });
+    });
+
+    // $("#autocomplete").autocomplete({
+    //     delay: 500,
+    //     minLength: 1,
+    //     source: function(request, response) {
+
+    //         ajaxGet("/ajax/get_region_autocomplete", {'region' : request.term}, function (data){
+    //             response(data);
+    //         });
+
+    //     },
+    //     focus: function(event, ui) {
+    //         // prevent autocomplete from updating the textbox
+    //         event.preventDefault();
+    //     },
+    //     select: function(event, ui) {
+    //         // prevent autocomplete from updating the textbox
+    //         event.preventDefault();
+    //         $(this).val(ui.item.value)
+    //         // navigate to the selected item's url
+    //         // window.open(ui.item.url);
+    //     }
+    // });
+    $('[data-value="byr"]').first().click()
+    $('div[data-value="flat"]').first().click();
+});
+function parenthesis(data){
+    $.each(data, function(index,value){
+        $('#id_region_0 li[data-value="'+ index +'"]').html( $('#id_region_0 li[data-value="'+ index +'"]').html().split(' (')[0] + ' (' +  value +')');  
+    });
+    if ( $('#id_region_0').find('span').text().indexOf("(") > -1 ){
+        var city = $('#id_region_0').find('span').text().substr(0, $('#id_region_0').find('span').text().indexOf("(") + 1 );
+        $('[name="region_0"]').find('span').html( $('#id_region_0').find('ul').find("li:contains('" + city + "')").text() );
+    }   
+}
+</script>

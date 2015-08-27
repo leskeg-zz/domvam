@@ -1,0 +1,310 @@
+{% load header_footer %}
+{% load assets %}
+{% load common_tags %}
+{% load filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Недвижимость{% endblock title %}</title>
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+    {% assets "css_all" %}
+        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+    {% endassets %}
+    <meta name="keywords" content="{% block meta_keys %}{% endblock meta_keys %}">
+    <meta name="description" content="{% block meta_desc %}{% endblock meta_desc %}">
+</head>
+<body>
+
+<div id="header" {% block header_style %}style="height: 729px"{% endblock header_style %} >
+    <div id="header-top-line">
+        <div id="header-top-line-content">
+            <div id="realty-type">
+                {% for gr in realt_cat_dict.keys %}
+                    <div {% filter_link get_params "group" gr %}>{{ realt_cat_tr|get_item:gr }}</div>
+                {% endfor %}
+            </div>
+            <div id="regist">
+                <div style="margin-right: 10px"><a href="">&nbsp;</a></div>
+                <div style="margin-right: 10px"><a href="">О проекте</a></div>
+                <div style="margin-right: 10px"><a href="/support">Поддержка</a></div>
+                <div style="margin-right: 140px"><a href="/agency_list">Список агентств</a></div>
+
+
+                {% if user.is_authenticated == False %}
+                    <div class='register_or_login' id='register' style="margin-right: 45px;cursor:pointer;color:white">Регистрация</div>
+                    <div class='register_or_login' id='login' style="margin-right: 45px;cursor:pointer;color:white">Авторизация</div>
+                {% else %}
+                    <!--<div style="margin-right: 10px"><a href="/user-profile">{{ user.username }}</a></div>-->
+                    <div style="margin-right: 10px"><a href="/user-profile">Профиль</a></div>
+                    <div style="margin-right: 10px"><a href="/favorite-cards">Избранные</a></div>
+                    <div style="margin-right: 10px"><a href="/my-cards">Мои объявления</a></div>
+                    <div><a href="/logout">Выход</a></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div id="header-content">
+        <div id="top-content">
+            <a href="/"><div id="logo"></div></a>
+            <div id="topLinks">
+                <a href="">Как это работает?</a>
+                <a href="">Для владельцев</a>
+                <a href="">Для путешествинников</a>
+            </div>
+           <a href="{% url "add_card" %}"><button>Добавить объявление</button></a>
+        </div>
+        {% block map_header %}
+            {% include "map_header.html" %}
+        {% endblock map_header %}
+    </div>
+</div>
+<div id="upButton" onclick="$(document).scrollTop(0)" style="display: none;z-index: 1;"></div>
+
+<div id='screen'>
+</div>
+<div class='popup_message' style='display:none;'>
+<div style="cursor:pointer;" align="right" class="close_popup"></div>
+<div id='popup_content'>
+
+    <div>
+        <form class='register_or_login_form' id='my_register' method="GET" enctype="multipart/form-data">
+            {% include "register_form.html"%}
+        </form>
+    </div>
+
+    <div>
+        <form class='register_or_login_form' id='my_login' method="GET" enctype="multipart/form-data">
+            {% include "login_form.html"%}
+        </form>
+    </div>
+
+    <div id="social-auth">
+        <a href="{% url 'social:begin' 'vk-oauth2' %}"><img src="/static/images/vkontakte.png"></a>
+        <a href="{% url 'social:begin' 'facebook' %}"><img src="/static/images/facebook.png"></a>
+    </div>
+
+</div>
+<div id='popup_message'></div>
+</div>
+
+
+{% block filters %}
+
+{% endblock filters %}
+
+{% block body_content %}
+
+{% endblock body_content %}
+    
+{% block footer_assets %}
+<div id="footer">
+        <div id="top-line"></div>
+        <div id="footer-content">
+            <div style="width: 337px">
+                <style type="text/css">
+                #copyright {
+                    height: 70px;
+                    padding: 13px;
+                    /*color: #878787;*/
+                    font-size: 11px;
+                    font-weight: bold;
+                    line-height: 16px;
+                    margin-top: 10px;
+                    background: url("/static/images/x.png") no-repeat left center;
+                    background-size: 30%;
+                }
+                </style>
+                <span id="copyright">© 2014 - 2015, <a href="http://xpride.by">xPride.by</a><br>Создание и продвижение сайта<br></span>
+                <p>Здесь Вы можете найти и забронировать любые заинтересовавшие Вас квартиры посуточно в любом уголке Беларуси. При этом аренда квартир посуточно происходит непосредственно у хозяина, а снять квартиру на сутки можно без оплаты комиссионных. С нашей помощью Вы сможете снять квартиру посуточно в различных регионах Беларуси.</p>
+                
+
+            </div>
+            <div>
+                <div>КОМПАНИЯ</div>
+                <ul>
+                    <li><a href="">Реклама</a></li>
+                    <li><a href="">Правила</a></li>
+                    <li><a href="">Контакты</a></li>
+                    <li><a href="">Помощь</a></li>
+                    <li><a href="">Наш блог</a></li>
+                </ul>
+            </div>
+            <div>
+                <div>ЖИЛАЯ</div>
+                <ul>
+                    <li><a href="/-living-flat">Квартиры</a></li>
+                    <li><a href="/-living-house">Дома</a></li>
+                    <li><a href="/-living-area">Участки</a></li>
+                    <li><a href="/-living-liv_misc">Другое</a></li>
+                </ul>
+            </div>
+            <div>
+                <div>КОММЕРЧЕСКАЯ</div>
+                <ul>
+                    <li><a href="/-commercial-building">Здания</a></li>
+                    <li><a href="/-commercial-premise">Помещения</a></li>
+                    <li><a href="/-commercial-land">Земельные участки</a></li>
+                    <li><a href="/-commercial-business">Готовый бизнес</a></li>
+                </ul>
+            </div>
+            <div>
+                <div>МЫ В СОЦ. СЕТЯХ</div>
+                <div id="social">
+                    <a href=""><img src="/static/images/ok.png"></a>
+                    <a href=""><img src="/static/images/facebook.png"></a>
+                    <a href=""><img src="/static/images/vkontakte.png"></a>
+                    <a href=""><img src="/static/images/twitter.png"></a>
+                    <a href=""><img src="/static/images/google_plus.png"></a>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock footer_assets %}
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+$(function(){
+    if (window.location.pathname == "/add-card"){
+        $('#social-auth').hide();
+    }
+
+
+    $('.register_or_login').on('click', function(){
+        $('#screen').css({  "display": "block", opacity: 0.7, "width":$(document).width(),"height":$(document).height()});
+        $('.popup_message').show();
+        $('.close_popup').click(function(){
+            $('#popup_content').show();
+            $('#screen').css("display", "none");
+            $('.popup_message').css("display", "none");
+            $('#popup_message').css("display", "none");
+        }); 
+
+        if ( $(this).attr('id') == 'register' ){
+            $('#my_register').show();
+            $('#my_login').hide();
+        }else if ( $(this).attr('id') == 'login' ){
+            $('#my_login').show();
+            $('#my_register').hide();
+        }
+
+    });
+
+    $(".register_or_login_form").submit(function(event) {
+        event.preventDefault();
+        var postData = $(this).serializeArray();
+
+        if ( $(this).attr('id') == 'my_register' ){
+
+            if ( $(this).find('button[style="display: inline-block;"]').attr('name') == '_register' ){
+                var myurl = $(this).attr('id').substring(3);
+            }else {
+                var myurl = $(this).attr('id').substring(3) + 'Agency';
+            }
+
+            ajaxPost('/'+myurl, postData, function (data){
+                window.scrollTo(0, 0);
+                $('#popup_message').html(data);
+                $('#popup_message').css("display", "block");
+                $('#popup_content').hide();
+                $('#user_not_logged').hide();
+            });
+
+        }else if ( $(this).attr('id') == 'my_login' ){
+            ajaxPost('ajax/ajax_login', postData, function (data){
+                window.scrollTo(0, 0);
+                if (data=='Wellcome' || data.indexOf('error')>-1 ){
+                    $('#popup_message').html(data);
+                }else{
+                    $('.close_popup').click();
+                    $('#regist').html(data);
+                    $('#user_not_logged').hide();
+                }
+                $('#popup_message').css("display", "block");
+                $('#popup_content').hide();
+            });
+        }
+
+
+    });
+
+    $('#screen').on('click',function(){
+        $('.close_popup').click();        
+    });
+
+    $('#agency_checkbox').on('click',function(){
+        if ( $('#agency_checkbox').find('div').attr('checked') == 'checked' ){
+            $('#agency_form').show();
+            $('[name="_register"]').hide();
+            $('#social-auth').hide();
+            $('[name="_registerAgency"]').show();
+            required('agency_form',true);
+
+
+        }else{
+            if (window.location.pathname != "/add-card"){
+                $('#social-auth').show();
+            }
+            $('#agency_form').hide();
+            $('[name="_register"]').show();
+            $('[name="_registerAgency"]').hide();
+            required('agency_form',false);
+        }
+    });
+    required('agency_form',false);
+});
+
+function required(id,bool){
+    if (bool==false){
+        $.each($('#' + id).find('input'), function(i,el){
+            $(el).removeAttr('required');
+            //leskeg
+        });
+    }else{
+        $.each($('#' + id).find('input'), function(i,el){
+            $(el).attr('required','required');
+        });
+    }
+    $.each(['mobile_phone','fax','extra_email','number_state_registration', 'region', 'house_number_body', 'office_number_room_apartment','mail_adress' ], function(i,el){
+        $('[name="'+ el + '"]').removeAttr('required');
+    });
+}
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            w.yaCounter27826014 = new Ya.Metrika({id:27826014,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+
+// LiveInternet counter
+document.write("<div style='display:none'><a href='//www.liveinternet.ru/click' "+
+"target=_blank><img src='//counter.yadro.ru/hit?t44.1;r"+
+escape(document.referrer)+((typeof(screen)=="undefined")?"":
+";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+";"+Math.random()+
+"' alt='' title='LiveInternet' "+
+"border='0' width='31' height='31'><\/a></div>")
+// LiveInternet
+
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/27826014" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>

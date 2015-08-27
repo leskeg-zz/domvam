@@ -1,0 +1,12 @@
+.hgignore
+.hg/
+*.pyc
+
+venv/*
+static/gen/*
+static/.webassets-cache/*
+static/img/*
+static/media/*
+real_static/media/*
+real_static/img/*
+parse_cache/*

@@ -1,0 +1,30 @@
+[
+    {
+        "model": "realty.Object_type",
+        "pk": 1,
+        "fields": {
+            "name": "Квартира"
+        }
+    },
+    {
+        "model": "realty.Object_type",
+        "pk": 2,
+        "fields": {
+            "name": "Комната"
+        }
+    },
+    {
+        "model": "realty.Object_type",
+        "pk": 3,
+        "fields": {
+            "name": "Дом"
+        }
+    },
+    {
+        "model": "realty.Object_type",
+        "pk": 4,
+        "fields": {
+            "name": "Гараж"
+        }
+    }
+]

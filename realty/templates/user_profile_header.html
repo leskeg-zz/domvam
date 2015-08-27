@@ -1,0 +1,156 @@
+
+{% load filters %}
+
+<TABLE style='width:100%'>
+<col width="40%" align="left">
+<col width="60%">
+    <TD>
+        <TABLE style='width:100%'>
+        <col width="40%">
+        <col width="60%">
+            <td>
+        <table style="">
+        <colgroup><col width="40%">
+        <col width="60%">
+            </colgroup><tbody><tr>
+
+
+            <td style="width: 188px;  height: 188px;display: table;    ">
+
+            <form method="post" enctype="multipart/form-data" action="/add_profile_image">
+
+                <input id='profile-image-upload' name='file' type="file" accept="image/*" hidden/> <!-- cute but only works in some browsers-->
+
+                {% if user.image %}
+                    <img id="profile-image" style="cursor:pointer; width: 188px;  height: 188px;" src='{{user.image}}'>
+                {% else %}
+                    <img id="profile-image" style="cursor:pointer; width: 188px;  height: 188px;" src='/static/images/noProfilePhoto.jpg'>
+                {% endif %}
+
+                <input type="submit" value="Send" hidden/><input class="reset" type="button" value="Reset" hidden/>
+            </form>
+
+            <!--
+            <form id="add_image_form" method="GET" enctype="multipart/form-data" action="/add_profile_image" validate>
+                <input id="profile-image-upload" hidden type="file" accept="image/*">
+                <input type="submit" hidden id='upload_photo_button'>
+            </form>-->
+
+            </td>
+
+            <td style="padding-bottom: 40px;padding-left: 30px;    ">
+                <div style="    font-size: 24px;  font-weight: 600;         height: 25px;    ">{{user.username}}</div>
+                
+                <div id='user_fullname' style="cursor:pointer;">{% if user.fullname %} {{ user.fullname }} {% else %}Добавить Полное имя+{% endif %}</div>
+                <span id="edit_fullname_input" style="display:none"><input id="edit_fullname_value" placeholder="" style="width: 200px; height: 34px" type="text">
+                <span id="submit_edit_fullname" style="cursor:pointer;">-></span></span>
+                
+                <div></div>
+                <div style="    font-size: 14px;  font-weight: 600;    ">{{user.email}}</div>
+                
+{% if is_agency %}
+                <div id="add_info_agency" style="cursor:pointer"><a href="/add_agency_details?obj_id={{user.id}}">Добавить информацию+</a></div> 
+{% endif %}
+
+
+
+
+
+
+
+
+                <div id="user_phones" style="   font-size: 14px;   ">
+                    
+                        <ul style="margin-top: 20px;list-style-type: none;">
+                            {% for phone in user.phones %}
+                                <li><span id="phone_id_0">{{phone}}</span><span id="delete_phone_id_{{forloop.counter0}}" class="delete_phone" style="cursor:pointer;"> x</span></li>
+                            {% endfor %}
+                            
+                        </ul>
+                    
+                    <span style="cursor:pointer" id="add_new_phone1">Добавить номер+</span>
+                    <span id="new_phone_input" style="display:none"><input id="new_phone_value" mask="+999 99 999 99 99" placeholder="+375 00 000 00 00" style="width: 200px; height: 34px" type="text">
+                    <span id="submit_new_phone" style="cursor:pointer;">-&gt;</span></span>
+                </div>
+
+                {% if is_agency %}
+                    <div id='my-contacts' style="  color: #ff5442;     font-size: 14px;     line-height: 40.005px;       width: 121px;    height: 16px;cursor:pointer; ">Список контактов</div>
+                {% endif %}
+
+
+
+                <!-- <a href='/my-cards' style="text-decoration: none"> -->
+                <div id='my-cards' style="  color: #ff5442;     font-size: 14px;     line-height: 40.005px;       width: 121px;    height: 16px;cursor:pointer; ">Мои объявления</div>
+                <!-- </a> -->
+                <!-- <a href='/favorite-cards' style="text-decoration: none"> -->
+                <div id='my-favorites' style="  color: #ff5442;   font-size: 14px;     line-height: 40px;       height: 16px;cursor:pointer;">Избранные</div>
+                <!-- </a> -->
+            </td>
+        </tr></tbody></table>
+        </td>
+        </TABLE>
+</TD>
+<TD valign='top'>
+
+    <table style="width:100%;">
+        <tbody><tr><td style="    font-size: 24px;  font-weight: 600;        ">Моя статистика</td>
+        </tr><tr>
+            <td style="    font-size: 14px;  font-weight: 600;        ">
+
+    <table style="width:100%;">
+        <tbody><th align="left" style="">Активность на сайте</th>
+        </tr>
+        <tr>
+            <td>Просмотрено:</td>
+            <td>N/A</td>
+        </tr>
+        <tr>
+            <td>В избранном:</td>
+            <td>N/A</td>                    
+        </tr>
+        <tr>
+            <td>Добавлено:</td>
+            <td>N/A</td>
+        </tr>
+    </tbody>
+    </table>
+
+
+
+
+            </td>
+
+            <td style="    font-size: 14px;  font-weight: 600;        ">
+                
+    <table style="width:100%;">
+        <tbody><th align="left" style="">Мои объявления</th>
+        <tr>
+            <td>Просмотрели:</td>
+            <td>N/A</td>
+        </tr>
+        <tr>
+            <td>В избранном у:</td>
+            <td>N/A</td>                    
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </tbody>
+    </table>
+
+
+
+
+            </td>
+
+
+
+
+            </tr><tr>
+                </tr></tbody>
+    </table>
+</TD>
+
+
+</TABLE>

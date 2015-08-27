@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load filters %}
+{% block header_style %}style="height: 158px;"{% endblock header_style %}
+{% block map_header %}{% endblock map_header %}
+
+{% block body_content %}
+	<div align="center">
+
+		<form method="POST" enctype="multipart/form-data" action="/add_agency_details" validate="">
+		<br>
+		    {% csrf_token %}
+		    <input hidden name="agency_id" value="{{obj_id}}">
+			<div id="add-contact" style="text-align:center">
+			    <div><input name="domain" placeholder="www.domain.com" style="width: 500px; height: 34px" type="text" required="required"></div><br>
+			    <div><input name="worktime" placeholder="worktime" style="width: 500px; height: 34px" type="text" required="required"></div><br>
+			    <div><textarea name="description" placeholder="description" style="width: 500px; height: 340px" type="url" required="required"></textarea></div><br>
+			    <button>Далее</button>
+			</div>
+		<br>
+		</form>
+
+	</div>
+
+	{% for i in 30|get_range %}
+	<br>
+	{% endfor %}
+
+{% endblock body_content %}

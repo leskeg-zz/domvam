@@ -1,0 +1,105 @@
+[{
+    "pk": 1,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": null,
+        "name": "\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u044c",
+        "slug": "belarus"
+    }
+}, {
+    "pk": 2,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 7,
+        "name": "\u041c\u0438\u043d\u0441\u043a",
+        "slug": "minsk"
+    }
+}, {
+    "pk": 3,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 1,
+        "name": "\u0411\u0440\u0435\u0441\u0442\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+        "slug": "brest-region"
+    }
+}, {
+    "pk": 4,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 1,
+        "name": "\u0412\u0438\u0442\u0435\u0431\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+        "slug": "vitebsk-region"
+    }
+}, {
+    "pk": 5,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 1,
+        "name": "\u0413\u043e\u043c\u0435\u043b\u044c\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+        "slug": "gomel-region"
+    }
+}, {
+    "pk": 6,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 1,
+        "name": "\u0413\u0440\u043e\u0434\u043d\u0435\u043d\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+        "slug": "grodno-region"
+    }
+}, {
+    "pk": 7,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 1,
+        "name": "\u041c\u0438\u043d\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+        "slug": "minsk-region"
+    }
+}, {
+    "pk": 8,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 1,
+        "name": "\u041c\u043e\u0433\u0438\u043b\u0451\u0432\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
+        "slug": "mogilev-region"
+    }
+}, {
+    "pk": 9,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 3,
+        "name": "\u0411\u0440\u0435\u0441\u0442",
+        "slug": "brest"
+    }
+}, {
+    "pk": 10,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 4,
+        "name": "\u0412\u0438\u0442\u0435\u0431\u0441\u043a",
+        "slug": "vitebsk"
+    }
+}, {
+    "pk": 11,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 5,
+        "name": "\u0413\u043e\u043c\u0435\u043b\u044c",
+        "slug": "gomel"
+    }
+}, {
+    "pk": 12,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 6,
+        "name": "\u0413\u0440\u043e\u0434\u043d\u043e",
+        "slug": "grodno"
+    }
+}, {
+    "pk": 13,
+    "model": "realty.region",
+    "fields": {
+        "parent_region": 8,
+        "name": "\u041c\u043e\u0433\u0438\u043b\u0435\u0432",
+        "slug": "mogilev"
+    }
+}]

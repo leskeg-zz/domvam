@@ -1,0 +1,94 @@
+{% load staticfiles %}
+{% load filters %}
+    
+
+    <div class="big-poster-head">
+        {% if ad.period == "short_term" %}
+                <div>сутки {% if ad.auction %} (возможен торг) {% endif %}</div>
+            {% elif ad.period == "long_term" %}
+                <div>NOсутки{% if ad.auction %} (возможен торг) {% endif %}</div>
+            {% endif %}
+            {% if ad.number_of_reviews %} <span>Отзывы: {{ ad.number_of_reviews }}</span> {% endif %}
+            
+            {% if ad.action_type %} {{ad.action_type|translate_to_ru2}}{%endif%}    
+                
+            {% if ad.cat_type %} | {{ad.cat_type|translate_to_ru2}}{%endif%}
+    </div>
+
+    <div class="big-poster-price">
+        {% if user.is_authenticated  and ad.username != user.username %}
+            <span style="float:right" >
+                <a class="favorite-card-main star-list" name="{{ ad.id }}" style="text-decoration:none;cursor:pointer">
+                    <img src="/static/images/favorite_mark_select.png"{% if ad.id|slugify in myfav %}style="display:block"{% else %}style="display:none"{% endif %}>
+                    <img src="/static/images/favorite_mark_unselect.png"{% if ad.id|slugify in myfav %}style="display:none"{% else %}style="display:block"{% endif %}>
+                </a>
+            </span>
+        {% endif %}          
+        <div class="date">Добавленно: {{ ad.adding_date | date:"j F o" }}</div>
+        <div class="price">{{ ad.price|stringformat:".0f"|intspaces }} {{ ad.currency }}</div>  
+        <div class="time">стуки</div> 
+        <div class="on_course">По курсу:</div>    
+        <div class="auction">Возможен торг</div>    
+    </div>
+
+
+    
+
+    
+
+    <div class="big-poster-content" title="{{ ad.title }}">
+        <h1 style="margin:0" ><a {% if mode == "favorites" %} href="{% url 'card' ad.id %}" {% else %} class="link_one_card" idcard="{{ ad.id }}" style="cursor:pointer" href="{% url 'card' ad.id %}"{% endif %}>{{ ad.title|truncatechars:29 }}</a></h1>
+        <h2>
+        {% if ad.region %}{{ ad.region }}{% endif %}
+        {% if ad.region2 %}({{ ad.region2 }}){% endif %}
+        {% if ad.address %} | {{ ad.address }}{% endif %}
+        </h2>
+
+        <div class="square">
+            {% if ad.number_of_rooms|isnumeric %}
+                <span>Комнат</span>
+                <div>{{ ad.number_of_rooms }}</div>
+            {% else %}
+                <span style="width:44px"></span>
+                <div style="background-color:white"></div>
+            {% endif %}
+            {% if ad.total_area|isnumeric %}
+                <span>Площадь</span>
+                <div>
+                {% if ad.total_area %}{{ ad.total_area }}{% endif %}
+                {% if ad.living_area %}/{{ ad.living_area }}{% endif %}
+                {% if ad.kitchen_area %}/{{ ad.kitchen_area }}{% endif %}
+                </div>
+            {% else %}
+                <span style="width:54px"></span>
+                <div style="background-color:white"></div>
+            {% endif %}
+            {% if ad.floor|isnumeric or ad.number_or_floors|isnumeric  %}
+                <span>Этаж</span>
+                <div>{% if ad.floor|isnumeric %}{{ ad.floor }}{% endif %}
+                {% if ad.floor|isnumeric and ad.number_or_floors|isnumeric  %}/{% endif %}
+                {% if ad.number_or_floors|isnumeric %}{{ ad.number_or_floors }}{% endif %}</div>
+            {% else %}
+                <span style="width:30px"></span>
+                <div style="background-color:white"></div>
+            {% endif %}
+        </div>
+        <p>{{ ad.description|truncatechars:140 }}</p>
+    </div>
+    
+    <a {% if mode == "favorites" %} href="{% url 'card' ad.id %}" {% else %} class="link_one_card" idcard="{{ ad.id }}" style="cursor:pointer" href="{% url 'card' ad.id %}"{% endif %}>
+        <div class="big-poster-photos">
+        {% if ad.images_len > 0 %}
+{% if ad.images_len == 1 %}
+<img class="main" style="width:100%" src="{{ ad.images.thumbs.0 }}">
+{% else %}
+
+            {% for img_src in ad.images.thumbs|slice:":4" %}
+                <img {% if forloop.counter0 == 0 %}class="main"{% endif %} {% if img_src|check_img_path %} src="{% static img_src|lstrip:"/" %}" {% else %} src="{{ img_src }}" {% endif %}>
+            {% endfor %}
+{% endif %}
+        {% else %}
+            <div id="list-map-{{ad.id}}"></div>
+        {% endif %}
+        </div>
+    </a>
